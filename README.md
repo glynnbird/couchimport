@@ -91,3 +91,21 @@ This example downloads public crime data, unzips and imports it:
 In the above example we use "(ccurl)[https://github.com/glynnbird/ccurl]" a command-line utility that uses the same environment variables as "couchimport".
 
 ## Output
+
+The following output is visible on the console when "couchimport" runs:
+
+```
+******************
+ COUCHIMPORT - configuration
+   {"COUCH_URL":"https://****:****@myhost.cloudant.com","COUCH_DATABASE":"aaa","COUCH_TRANSFORM":null,"COUCH_DELIMETER":","}
+******************
+Written 500  ( 500 )
+Written 500  ( 1000 )
+Written 500  ( 1500 )
+Written 500  ( 2000 )
+.
+.
+
+```
+
+The configuration, whether default or overriden from environment variables is show, followed by a line of output for each block of 500 documents written, plus a cumulative total.
