@@ -1,9 +1,8 @@
-var stream = require('stream');
-var cloudant = require('./cloudant.js');
-
-var buffer = [ ];
-var BUFFER_MAX_SIZE = 500;
-var written = 0;
+var stream = require('stream'),
+  cloudant = require('./cloudant.js'),
+  buffer = [ ],
+  BUFFER_MAX_SIZE = 500,
+  written = 0;
 
 // write the contents of the buffer to CouchDB in blocks of 500
 var processBuffer = function(flush, callback) {

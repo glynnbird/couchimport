@@ -1,7 +1,8 @@
-var stream = require('stream');
+var stream = require('stream'),
+  config = require('./config.js');
 
 var headings = null;
-var DELIMETER = "\t";
+var DELIMETER = config.COUCH_DELIMETER;
 
 var objectifier = new stream.Transform( { objectMode: true } );
 
