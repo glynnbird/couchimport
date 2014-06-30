@@ -1,8 +1,8 @@
 {
   "name": "couchimport",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "CouchImport - command-line helper to bulk import data from CSV/TSV",
-  "repository": "https://github.com/glynnbird/ccurl.git",
+  "repository": "https://github.com/glynnbird/couchimport.git",
   "keywords": [
     "CouchDB",
     "Cloudant",
@@ -15,6 +15,6 @@
     "nano": "5.10.0"
   },
   "bin": {
-      "ccurl": "bin/couchimport.bin.js"
+      "couchimport": "bin/couchimport.bin.js"
   }
 }
