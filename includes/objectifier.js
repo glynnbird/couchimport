@@ -4,6 +4,8 @@ var headings = null;
 var DELIMETER = "\t";
 
 var objectifier = new stream.Transform( { objectMode: true } );
+
+// take a line of text
 objectifier._transform = function (line, encoding, done) {
 
   // remove /r character
@@ -23,6 +25,8 @@ objectifier._transform = function (line, encoding, done) {
     for (var i in headings) {
       obj[headings[i]] = bits[i];
     }
+    
+    // pass the object to the next thing in the stream
     this.push(obj);
     done();
   }

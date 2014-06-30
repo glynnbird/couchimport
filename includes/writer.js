@@ -5,6 +5,7 @@ var buffer = [ ];
 var BUFFER_MAX_SIZE = 500;
 var written = 0;
 
+// write the contents of the buffer to CouchDB in blocks of 500
 var processBuffer = function(flush, callback) {
   
   if(flush || buffer.length>= BUFFER_MAX_SIZE) {
@@ -21,12 +22,12 @@ var processBuffer = function(flush, callback) {
 }
 
 var writer = new stream.Transform( { objectMode: true } );
-writer._transform = function (obj, encoding, done) {
 
+// take an object
+writer._transform = function (obj, encoding, done) {
     
   // add to the buffer
   buffer.push(obj);
-
 
   // optionally write to the buffer
   processBuffer(false,  function() {
