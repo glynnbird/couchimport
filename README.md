@@ -10,6 +10,8 @@ When populating CouchDB databases, often the source of the data is initially a C
 * plug in a custom function to add your own changes before the data is written
 * writes the data in bulk for speed
 
+![schematic](https://github.com/glynnbird/couchimport/raw/master/public/images/couchimport.png "Schematic Diagram")
+
 ## Installation
 
 Requirements
@@ -67,7 +69,6 @@ The define the column delimiter in the input data e.g.
 ```
   export COUCH_DELIMIETER=","
 ```
-
 
 ## Running
 
