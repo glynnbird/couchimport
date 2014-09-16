@@ -31,7 +31,7 @@ CouchImport's configuration parameters are stored in environment variables.
 Simply set the "COUCH_URL" environment variable e.g. for a hosted Cloudant database
 
 ```
-  export COUCH_URL="https://myusername:myPassw0rd0myhost.cloudant.com"
+  export COUCH_URL="https://myusername:myPassw0rd@myhost.cloudant.com"
 
 ```
 or a local CouchDB installation:
