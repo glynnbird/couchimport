@@ -6,7 +6,7 @@ var transformer = new stream.Transform( { objectMode: true } );
 transformer._transform = function (obj, encoding, done) {
 
   // transform using custom function
-  if(config.COUCH_TRANSFORM) {
+  if(typeof config.COUCH_TRANSFORM == "function") {
     obj = config.COUCH_TRANSFORM(obj);
   }
   

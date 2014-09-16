@@ -60,7 +60,7 @@ The file should:
 * be a javascript file 
 * export one function that takes a single doc and returns the transformed version synchronously
 
-(see examples directory).
+(see examples directory). N.B it's best to use full paths for the transform function.
 
 ### Delimiter - default "/t"
 
