@@ -67,7 +67,7 @@ The file should:
 The define the column delimiter in the input data e.g. 
 
 ```
-  export COUCH_DELIMIETER=","
+  export COUCH_DELIMETER=","
 ```
 
 ## Running
