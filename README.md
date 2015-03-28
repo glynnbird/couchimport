@@ -110,3 +110,12 @@ Written 500  ( 2000 )
 ```
 
 The configuration, whether default or overriden from environment variables is show, followed by a line of output for each block of 500 documents written, plus a cumulative total.
+
+## Environment variables
+
+* COUCH_URL - the url of the CouchDB instance (required)
+* COUCH_DATABASE - the database to deal with (required)
+* COUCH_DELIMETER - the delimiter to use (default ',')
+* COUCH_TRANSFORM - the path of a transformation function (not required)
+* COUCHIMPORT_META - a json object which will be passed to the transform function (not required)
+
