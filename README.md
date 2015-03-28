@@ -115,7 +115,7 @@ The configuration, whether default or overriden from environment variables is sh
 
 * COUCH_URL - the url of the CouchDB instance (required)
 * COUCH_DATABASE - the database to deal with (required)
-* COUCH_DELIMETER - the delimiter to use (default ',')
+* COUCH_DELIMETER - the delimiter to use (default '\t')
 * COUCH_TRANSFORM - the path of a transformation function (not required)
 * COUCHIMPORT_META - a json object which will be passed to the transform function (not required)
 
