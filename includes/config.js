@@ -27,6 +27,12 @@ if( typeof process.env.COUCH_DELIMETER != "undefined") {
   theconfig.COUCH_DELIMETER = process.env.COUCH_DELIMETER;
 }
 
+// if there is metadata specified
+if( typeof process.env.COUCHIMPORT_META != "undefined") {
+  theconfig.COUCHIMPORT_META = JSON.parse(process.env.COUCHIMPORT_META);
+}
+
+
 console.log("******************");
 console.log(" COUCHIMPORT - configuration")
 console.log("  ", JSON.stringify(theconfig, null, ' ').replace(/\/\/.+@/g, "//****:****@"));
