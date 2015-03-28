@@ -1,4 +1,5 @@
 var theconfig = {};
+var argv = require('minimist')(process.argv.slice(2));
 
 // configure the CouchDB paramss
 theconfig.COUCH_URL = "http://localhost:5984";
@@ -30,6 +31,23 @@ if( typeof process.env.COUCH_DELIMETER != "undefined") {
 // if there is metadata specified
 if( typeof process.env.COUCHIMPORT_META != "undefined") {
   theconfig.COUCHIMPORT_META = JSON.parse(process.env.COUCHIMPORT_META);
+}
+
+// override with command-line parameters
+if(argv.url) {
+  theconfig.COUCH_URL = argv.url;
+}
+if(argv.db) {
+  theconfig.COUCH_DATABASE = argv.db;
+}
+if(argv.transform) {
+  theconfig.COUCH_TRANSFORM = argv.transform;
+}
+if(argv.delimeter) {
+  theconfig.COUCH_DELIMETER = argv.delimeter;
+}
+if(argv.meta) {
+  theconfig.COUCHIMPORT_META = argv.meta;
 }
 
 

@@ -119,3 +119,18 @@ The configuration, whether default or overriden from environment variables is sh
 * COUCH_TRANSFORM - the path of a transformation function (not required)
 * COUCHIMPORT_META - a json object which will be passed to the transform function (not required)
 
+## Command-line parameters
+
+You can now optionally override the environment variables by passing in command-line parameters:
+
+* --url - the url of the CouchDB instance (required)
+* --db - the database to deal with (required)
+* --delimeter - the delimiter to use (default '\t')
+* --transform - the path of a transformation function (not required)
+* --meta - a json object which will be passed to the transform function (not required)
+
+e.g.
+
+```
+    cat test.csv | couchimport --db bob --delimeter ","
+```
