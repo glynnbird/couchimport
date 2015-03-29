@@ -2,7 +2,7 @@ var stream = require('stream'),
   config = require('./config.js');
 
 var headings = null;
-var DELIMETER = config.COUCH_DELIMETER;
+var DELIMITER = config.COUCH_DELIMITER;
 
 var objectifier = new stream.Transform( { objectMode: true } );
 
@@ -19,12 +19,12 @@ objectifier._transform = function (line, encoding, done) {
     line = line.replace(/\'|\"/g, '');
     
     // store the headings for next time
-    headings = line.split(DELIMETER);
+    headings = line.split(DELIMITER);
     done();
   } else {
 
     // make an object with key value pairs using the headings as the key
-    var bits = line.split(DELIMETER);
+    var bits = line.split(DELIMITER);
     var obj = { };
     for (var i in headings) {
       obj[headings[i]] = bits[i];

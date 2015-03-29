@@ -43,7 +43,7 @@ if(argv.db) {
 if(argv.transform) {
   theconfig.COUCH_TRANSFORM = argv.transform;
 }
-if(argv.delimeter) {
+if(argv.delimiter) {
   theconfig.COUCH_DELIMITER = argv.delimiter;
 }
 if(argv.meta) {
