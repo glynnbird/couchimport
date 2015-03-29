@@ -67,7 +67,7 @@ The file should:
 The define the column delimiter in the input data e.g. 
 
 ```
-  export COUCH_DELIMETER=","
+  export COUCH_DELIMITER=","
 ```
 
 ## Running
@@ -84,7 +84,7 @@ This example downloads public crime data, unzips and imports it:
   curl 'http://data.octo.dc.gov/feeds/crime_incidents/archive/crime_incidents_2013_CSV.zip' > crime.zip
   unzip crime.zip
   export COUCH_DATABASE="crime_2013"
-  export COUCH_DELIMETER=","
+  export COUCH_DELIMITER=","
   ccurl -X PUT /crime_2013
   cat crime_incidents_2013_CSV.csv | couchimport
 ```
@@ -98,7 +98,7 @@ The following output is visible on the console when "couchimport" runs:
 ```
 ******************
  COUCHIMPORT - configuration
-   {"COUCH_URL":"https://****:****@myhost.cloudant.com","COUCH_DATABASE":"aaa","COUCH_TRANSFORM":null,"COUCH_DELIMETER":","}
+   {"COUCH_URL":"https://****:****@myhost.cloudant.com","COUCH_DATABASE":"aaa","COUCH_TRANSFORM":null,"COUCH_DELIMITER":","}
 ******************
 Written 500  ( 500 )
 Written 500  ( 1000 )
@@ -115,7 +115,7 @@ The configuration, whether default or overriden from environment variables is sh
 
 * COUCH_URL - the url of the CouchDB instance (required)
 * COUCH_DATABASE - the database to deal with (required)
-* COUCH_DELIMETER - the delimiter to use (default '\t')
+* COUCH_DELIMITER - the delimiter to use (default '\t')
 * COUCH_TRANSFORM - the path of a transformation function (not required)
 * COUCHIMPORT_META - a json object which will be passed to the transform function (not required)
 
@@ -125,7 +125,7 @@ You can now optionally override the environment variables by passing in command-
 
 * --url - the url of the CouchDB instance (required)
 * --db - the database to deal with (required)
-* --delimeter - the delimiter to use (default '\t')
+* --delimiter - the delimiter to use (default '\t')
 * --transform - the path of a transformation function (not required)
 * --meta - a json object which will be passed to the transform function (not required)
 

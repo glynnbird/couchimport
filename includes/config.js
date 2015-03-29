@@ -5,7 +5,7 @@ var argv = require('minimist')(process.argv.slice(2));
 theconfig.COUCH_URL = "http://localhost:5984";
 theconfig.COUCH_DATABASE = "test";
 theconfig.COUCH_TRANSFORM = null;
-theconfig.COUCH_DELIMETER = "\t";
+theconfig.COUCH_DELIMITER = "\t";
 
 // if we have a custom CouchDB url
 if( typeof process.env.COUCH_URL != "undefined") {
@@ -24,8 +24,8 @@ if( typeof process.env.COUCH_TRANSFORM != "undefined") {
 }
 
 // if we have overridden the delimeter field
-if( typeof process.env.COUCH_DELIMETER != "undefined") {
-  theconfig.COUCH_DELIMETER = process.env.COUCH_DELIMETER;
+if( typeof process.env.COUCH_DELIMITER != "undefined") {
+  theconfig.COUCH_DELIMITER = process.env.COUCH_DELIMITER;
 }
 
 // if there is metadata specified
@@ -44,7 +44,7 @@ if(argv.transform) {
   theconfig.COUCH_TRANSFORM = argv.transform;
 }
 if(argv.delimeter) {
-  theconfig.COUCH_DELIMETER = argv.delimeter;
+  theconfig.COUCH_DELIMITER = argv.delimiter;
 }
 if(argv.meta) {
   theconfig.COUCHIMPORT_META = argv.meta;
