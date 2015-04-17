@@ -25,8 +25,10 @@ var writer = new stream.Transform( { objectMode: true } );
 // take an object
 writer._transform = function (obj, encoding, done) {
     
-  // add to the buffer
-  buffer.push(obj);
+  // add to the buffer, if it's not null
+  if (obj) {
+    buffer.push(obj);
+  }
 
   // optionally write to the buffer
   processBuffer(false,  function() {
