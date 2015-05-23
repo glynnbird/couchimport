@@ -1,10 +1,7 @@
-var config = require('./includes/config.js');
-  rs = process.stdin,
-  liner = require('./includes/liner.js'),
+var rs = process.stdin,
   writer = require('./includes/writer.js'),
   objectifier = require('./includes/objectifier.js'),
-  transformer = require('./includes/transformer.js'),
-  cloudant = require('./includes/cloudant.js');
+  transformer = require('./includes/transformer.js');
    
 // pipe the input to the output, via transformation functions
 rs.pipe(objectifier)  // turn each line into an object

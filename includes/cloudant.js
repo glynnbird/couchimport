@@ -5,7 +5,7 @@ var bulk_write = function(docs, callback) {
   var db = nano.use(config.COUCH_DATABASE);
   db.bulk({docs: docs}, function(err, data) {
     callback(err, data);
-  })
+  });
 }
 
 module.exports = {

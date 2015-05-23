@@ -41,7 +41,7 @@ writer._transform = function (obj, encoding, done) {
 writer._flush = function(done) {
   processBuffer(true, function() {
     done();
-  })
+  });
 }
 
 module.exports = writer;
