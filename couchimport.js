@@ -4,10 +4,9 @@ var config = require('./includes/config.js');
   writer = require('./includes/writer.js'),
   objectifier = require('./includes/objectifier.js'),
   transformer = require('./includes/transformer.js'),
-  cloudant = require('./includes/cloudant.js'),
+  cloudant = require('./includes/cloudant.js');
    
 // pipe the input to the output, via transformation functions
-rs.pipe(liner)        // transform the input stream into per-line 
-  .pipe(objectifier)  // turn each line into an object
+rs.pipe(objectifier)  // turn each line into an object
   .pipe(transformer)  // process each object
   .pipe(writer) // transform the data

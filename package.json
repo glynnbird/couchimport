@@ -12,6 +12,7 @@
   "author": "Glynn Bird",
   "license": "BSD",
   "dependencies": {
+    "csv-parse": "^0.1.1",
     "minimist": "^1.1.1",
     "nano": "5.10.0"
   },

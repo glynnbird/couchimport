@@ -19,7 +19,6 @@ if( typeof process.env.COUCH_DATABASE != "undefined") {
 
 // if we have a customised transformation function
 if( typeof process.env.COUCH_TRANSFORM != "undefined") {
-
   theconfig.COUCH_TRANSFORM = require(process.env.COUCH_TRANSFORM)
 }
 
@@ -41,7 +40,7 @@ if(argv.db) {
   theconfig.COUCH_DATABASE = argv.db;
 }
 if(argv.transform) {
-  theconfig.COUCH_TRANSFORM = argv.transform;
+  theconfig.COUCH_TRANSFORM = require(argv.transform)
 }
 if(argv.delimiter) {
   theconfig.COUCH_DELIMITER = argv.delimiter;
