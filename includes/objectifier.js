@@ -1,6 +1,6 @@
 var stream = require('stream'),
   config = require('./config.js'),
-	parse = require('csv-parse');
+  parse = require('csv-parse');
 
 var headings = null;
 var DELIMITER = config.COUCH_DELIMITER;
