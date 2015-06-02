@@ -11,8 +11,12 @@ var processBuffer = function(flush, callback) {
     var toSend = buffer.splice(0, buffer.length);
     buffer = [];
     cloudant.bulk_write(toSend, function(err, data) {
-      written += toSend.length;
-      console.log("Written", toSend.length, " (",written,")");
+      if (err) {
+        console.error("ERROR", err);
+      } else {
+        written += toSend.length;
+        console.log("Written", toSend.length, " (",written,")");
+      }
       callback();
     });
   } else {
