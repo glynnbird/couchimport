@@ -36,6 +36,7 @@ writer._transform = function (obj, encoding, done) {
   }
 
   // optionally write to the buffer
+  this.pause();
   processBuffer(false,  function() {
     done();
   });
