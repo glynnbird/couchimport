@@ -16,7 +16,6 @@ var exportAsCSV = function(row) {
   if (headings.length ==0) {
     headings = Object.keys(row);
     console.log(headings.join(config.COUCH_DELIMITER));
-    return;
   }
   
   // output columns

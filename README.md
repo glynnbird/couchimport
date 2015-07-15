@@ -189,3 +189,5 @@ N.B.
 * the first non-design document is used to define the headings
 * if subsequent documents have different keys, then unexpected things may happen
 * COUCH_DELIMETER or --delimiter can be used to provide a custom column delimiter
+* if your document values contain carriage returns or the column delimiter, then this may not be the tool for you
+
