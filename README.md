@@ -156,3 +156,36 @@ e.g.
 ```
     cat test.csv | couchimport --db bob --delimeter ","
 ```
+
+## couchexport
+
+If you have structured data in a CouchDB or Cloudant that has fixed keys and values e.g.
+
+```
+{
+    "_id": "badger",
+    "_rev": "5-a9283409e3253a0f3e07713f42cd4d40",
+    "wiki_page": "http://en.wikipedia.org/wiki/Badger",
+    "min_weight": 7,
+    "max_weight": 30,
+    "min_length": 0.6,
+    "max_length": 0.9,
+    "latin_name": "Meles meles",
+    "class": "mammal",
+    "diet": "omnivore",
+    "a": true
+}
+```
+
+then it can be exported to a CSV like so:
+
+```
+    couchexport --db animaldb > test.csv
+```
+
+N.B.
+
+* design documents are ignored
+* the first non-design document is used to define the headings
+* if subsequent documents have different keys, then unexpected things may happen
+* COUCH_DELIMETER or --delimiter can be used to provide a custom column delimiter

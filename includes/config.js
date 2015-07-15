@@ -78,9 +78,9 @@ if(argv.jsonpath) {
 }
 
 
-console.log("******************");
-console.log(" COUCHIMPORT - configuration")
-console.log("  ", JSON.stringify(theconfig, null, ' ').replace(/\/\/.+@/g, "//****:****@"));
-console.log("******************")
+console.error("******************");
+console.error(" COUCHIMPORT - configuration")
+console.error("  ", JSON.stringify(theconfig, null, ' ').replace(/\/\/.+@/g, "//****:****@"));
+console.error("******************")
 
 module.exports = theconfig;
