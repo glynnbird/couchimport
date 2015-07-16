@@ -1,15 +1,9 @@
-var theconfig = {};
+var defaults = require('./defaults.js');
+var theconfig = defaults.get();
 var argv = require('minimist')(process.argv.slice(2));
 
 // configure the CouchDB paramss
 var types = ["text","json"];
-theconfig.COUCH_URL = "http://localhost:5984";
-theconfig.COUCH_DATABASE = "test";
-theconfig.COUCH_TRANSFORM = null;
-theconfig.COUCH_DELIMITER = "\t";
-theconfig.COUCH_FILETYPE="text";
-theconfig.COUCH_BUFFER_SIZE = 500;
-theconfig.COUCH_JSON_PATH = null;
 
 // if we have a custom CouchDB url
 if( typeof process.env.COUCH_URL != "undefined") {

@@ -2,7 +2,8 @@
 
 ## Introduction
 
-When populating CouchDB databases, often the source of the data is initially a CSV or TSV file. CouchImport is designed to assist you with importing flat data into CouchDB efficiently.
+When populating CouchDB databases, often the source of the data is initially a CSV or TSV file. CouchImport is designed to assist you with importing flat data into CouchDB efficiently. 
+It can be used either as command-line utilities `couchimport` and `couchexport` or the underlying functions can be used programatically:
 
 * simply pipe the data file to 'couchimport' on the command line
 * handles tab or comma separated data
@@ -191,3 +192,54 @@ N.B.
 * COUCH_DELIMETER or --delimiter can be used to provide a custom column delimiter
 * if your document values contain carriage returns or the column delimiter, then this may not be the tool for you
 
+## Using programmatically
+
+In your project, add `couchimport` into the dependencies of your package.json or run `npm install couchimport`. In your code, require
+the library with
+
+```
+    var couchimport = require('couchimport');
+```
+
+and your options are set in an object whose keys are the same as the COUCH_* environment variables:
+
+e.g.
+
+```
+   var opts = { COUCH_DELIMITER: ",", COUCH_URL: "http://localhost:5984", COUCH_DATABASE: "mydb" };
+```
+
+To import data from a readable stream (rs):
+
+```
+    var rs = process.stdin;
+    couchimport.importStream(rs, opts, function(err,data) {
+       console.log("done");
+    });
+```
+
+To import data from a named file: 
+
+```
+    couchimport.importFile("input.txt", opts, function(err,data) {
+       console.log("done",err,data);
+    });
+```
+
+To export data to a writable stream (ws):
+
+```
+   var ws = process.stdout;
+   couchimport.exportStream(ws, opts, function(err, data) {
+     console.log("done",err,data);
+   });
+```
+
+
+To export data to a named file:
+
+```
+   couchimport.exportFile("output.txt", opts, function(err, data) {
+      console.log("done",err,data);
+   });
+```

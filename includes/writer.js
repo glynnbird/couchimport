@@ -1,53 +1,58 @@
-var stream = require('stream'),
-  cloudant = require('./cloudant.js'),
-  config = require('./config.js'),
-  buffer = [ ],
-  BUFFER_MAX_SIZE = config.COUCH_BUFFER_SIZE,
-  written = 0;
+var debug = require('debug')('couchimport');
 
-// write the contents of the buffer to CouchDB in blocks of 500
-var processBuffer = function(flush, callback) {
+module.exports = function(couch_url, couch_database, buffer_size) {
   
-  if(flush || buffer.length>= BUFFER_MAX_SIZE) {
-    var toSend = buffer.splice(0, buffer.length);
-    buffer = [];
-    cloudant.bulk_write(toSend, function(err, data) {
-      if (err) {
-        console.error("ERROR", err);
-      } else {
-        written += toSend.length;
-        console.log("Written", toSend.length, " (",written,")");
-      }
-      callback();
-    });
-  } else {
-    callback();
-  }
-}
-
-var writer = new stream.Transform( { objectMode: true } );
-
-// take an object
-writer._transform = function (obj, encoding, done) {
+  var stream = require('stream'),
+    buffer = [ ],
+    written = 0;
     
-  // add to the buffer, if it's not an empty object
-  if (Object.keys(obj).length>0) {
-    buffer.push(obj);
+  var cloudant = require('cloudant')(couch_url);
+  var db = cloudant.db.use(couch_database);
+
+  // write the contents of the buffer to CouchDB in blocks of 500
+  var processBuffer = function(flush, callback) {
+  
+    if(flush || buffer.length>= buffer_size) {
+      var toSend = buffer.splice(0, buffer.length);
+      buffer = [];
+      db.bulk({docs:toSend}, function(err, data) {
+        if (err) {
+          console.error("ERROR", err);
+        } else {
+          written += toSend.length;
+          debug("Written", toSend.length, " (",written,")");
+        }
+        callback();
+      });
+    } else {
+      callback();
+    }
   }
 
-  // optionally write to the buffer
-  this.pause();
-  processBuffer(false,  function() {
-    done();
-  });
+  var writer = new stream.Transform( { objectMode: true } );
 
+  // take an object
+  writer._transform = function (obj, encoding, done) {
+    
+    // add to the buffer, if it's not an empty object
+    if (Object.keys(obj).length>0) {
+      buffer.push(obj);
+    }
+
+    // optionally write to the buffer
+    this.pause();
+    processBuffer(false,  function() {
+      done();
+    });
+
+  };
+
+  // called when we need to flush everything
+  writer._flush = function(done) {
+    processBuffer(true, function() {
+      done();
+    });
+  };
+  
+  return writer;
 };
-
-// called when we need to flush everything
-writer._flush = function(done) {
-  processBuffer(true, function() {
-    done();
-  });
-}
-
-module.exports = writer;
