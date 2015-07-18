@@ -156,10 +156,37 @@ var exportStream = function (ws, opts, callback) {
 var exportFile = function(filename, opts, callback) {
   exportStream(fs.createWriteStream(filename), opts, callback);
 };
+
+// load the first 10k of a file and parse the first 3 lines
+// filename - name of the file to load
+// opts - an options object, or null for defaults
+// callback - called when complete
+var previewCSVFile = function(filename, opts, callback) {
+ 
+  var parse = require('csv-parse');
+  
+  // merge default options
+  opts = defaults.merge(opts);
+ 
+  fs.open(filename, 'r', function(status, fd) {
+      if (status) {
+        return callback(status.message, null);
+      }
+      var buffer = new Buffer(10000);
+      fs.read(fd, buffer, 0, 10000, 0, function(err, num) {
+        var str = buffer.toString('utf-8', 0, num);
+        var lines = str.split("\n");
+        str = lines.splice(0,4).join("\n") + "\n";
+        fs.close(fd);
+        parse(str, {delimiter: opts.COUCH_DELIMITER, columns: true, skip_empty_lines: true, relax: true}, callback)
+      });
+  });
+};
  
 module.exports = {
   importStream: importStream,
   importFile: importFile,
   exportStream: exportStream,
-  exportFile: exportFile
+  exportFile: exportFile,
+  previewCSVFile: previewCSVFile
 }
