@@ -243,3 +243,26 @@ To export data to a named file:
       console.log("done",err,data);
    });
 ```
+
+## Monitoring an import
+
+Both `importStream` and `importFile` return an EventEmitter which emits 
+
+* `written` event on a successful write 
+* `writeerror` event when an event fails
+* `writecomplete` event after the last write has finished
+
+e.g.
+
+```
+couchimport.importFile("input.txt", opts, function(err,data) {
+  console.log("done",err,data);
+}).on("written", function(data) {
+  // data = { documents: 500, total: 63000}
+});
+````
+
+The emitted data is an objet containing:
+
+* documents - the number of documents written in the last batch
+* total - the total number of documents written so far

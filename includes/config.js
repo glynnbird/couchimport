@@ -1,6 +1,7 @@
-var defaults = require('./defaults.js');
-var theconfig = defaults.get();
-var argv = require('minimist')(process.argv.slice(2));
+var defaults = require('./defaults.js'),
+  theconfig = defaults.get(),
+  debug = require('debug')('couchimport'),
+  argv = require('minimist')(process.argv.slice(2));
 
 // configure the CouchDB paramss
 var types = ["text","json"];
@@ -72,9 +73,9 @@ if(argv.jsonpath) {
 }
 
 
-console.error("******************");
-console.error(" COUCHIMPORT - configuration")
-console.error("  ", JSON.stringify(theconfig, null, ' ').replace(/\/\/.+@/g, "//****:****@"));
-console.error("******************")
+debug("******************");
+debug("configuration");
+debug(JSON.stringify(theconfig, null, ' ').replace(/\/\/.+@/g, "//****:****@"));
+debug("******************");
 
 module.exports = theconfig;

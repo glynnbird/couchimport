@@ -50,7 +50,7 @@ var importStream = function(rs, opts, callback) {
       .pipe(writer); // write the data
   }
   
-  writer.on('finish', function() {
+  writer.on('writecomplete', function() {
     callback(null, null);
   });
   
@@ -58,6 +58,7 @@ var importStream = function(rs, opts, callback) {
     callback(e, null);
   });
   
+  return writer;
 };
 
 // import a named file into CouchDB 
@@ -65,7 +66,7 @@ var importStream = function(rs, opts, callback) {
 // opts - an options object, or null for defaults
 // callback - called when complete
 var importFile = function(filename, opts, callback) {
-  importStream(fs.createReadStream(filename), opts, callback);
+  return importStream(fs.createReadStream(filename), opts, callback);
 };
 
 // export to a writable stream

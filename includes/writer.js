@@ -1,5 +1,3 @@
-var debug = require('debug')('couchimport');
-
 module.exports = function(couch_url, couch_database, buffer_size) {
   
   var stream = require('stream'),
@@ -17,10 +15,13 @@ module.exports = function(couch_url, couch_database, buffer_size) {
       buffer = [];
       db.bulk({docs:toSend}, function(err, data) {
         if (err) {
-          console.error("ERROR", err);
+          writer.emit("writeerror", err);
         } else {
           written += toSend.length;
-          debug("Written", toSend.length, " (",written,")");
+          writer.emit("written", { documents: toSend.length, total: written});
+          if (flush) {
+            writer.emit("writecomplete", { documents: toSend.length, total: written});
+          }
         }
         callback();
       });
