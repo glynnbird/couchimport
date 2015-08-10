@@ -1,4 +1,6 @@
-module.exports = function(couch_url, couch_database, buffer_size) {
+var async = require('async');
+
+module.exports = function(couch_url, couch_database, buffer_size, parallelism) {
   
   var stream = require('stream'),
     buffer = [ ],
@@ -7,24 +9,54 @@ module.exports = function(couch_url, couch_database, buffer_size) {
   var cloudant = require('cloudant')(couch_url);
   var db = cloudant.db.use(couch_database);
 
+
+  // process the writes in bulk as a queue
+  var q = async.queue(function(payload, cb) {
+    db.bulk(payload, function(err, data) {
+      if (err) {
+        writer.emit("writeerror", err);
+      } else {
+        written += payload.docs.length;
+        writer.emit("written", { documents: payload.docs.length, total: written});
+      }
+      cb();
+    });
+  }, parallelism);
+  
+  
   // write the contents of the buffer to CouchDB in blocks of 500
   var processBuffer = function(flush, callback) {
   
     if(flush || buffer.length>= buffer_size) {
       var toSend = buffer.splice(0, buffer.length);
       buffer = [];
-      db.bulk({docs:toSend}, function(err, data) {
-        if (err) {
-          writer.emit("writeerror", err);
-        } else {
-          written += toSend.length;
-          writer.emit("written", { documents: toSend.length, total: written});
-          if (flush) {
-            writer.emit("writecomplete", { documents: toSend.length, total: written});
+      q.push({docs: toSend});
+      
+      // wait until the buffer size falls to a reasonable level
+      async.until(
+        
+        // wait until the queue length drops to twice the paralellism 
+        // or until empty
+        function() {
+          if(flush) {
+            return q.idle() && q.length() ==0
+          } else {
+            return q.length() <= parallelism * 2
           }
-        }
-        callback();
-      });
+        },
+        
+        function(cb) {
+          setTimeout(cb,100);
+        },
+        
+        function() {
+          if (flush) {
+            writer.emit("writecomplete", { total: written });
+          }
+          callback();
+        });
+
+
     } else {
       callback();
     }

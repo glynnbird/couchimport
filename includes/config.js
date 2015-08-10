@@ -46,6 +46,11 @@ if( typeof process.env.COUCH_JSON_PATH != "undefined") {
   theconfig.COUCH_JSON_PATH = process.env.COUCH_JSON_PATH;
 }
 
+// if there is a parallelism specified
+if( typeof process.env.COUCH_JSON_PATH != "undefined") {
+  theconfig.COUCH_PARALLELISM = parseInt(process.env.COUCH_PARALLELISM);
+}
+
 // override with command-line parameters
 if(argv.url) {
   theconfig.COUCH_URL = argv.url;
@@ -70,6 +75,9 @@ if(argv.buffer) {
 }
 if(argv.jsonpath) {
   theconfig.COUCH_JSON_PATH = argv.jsonpath;
+}
+if(argv.parallelism) {
+  theconfig.COUCH_PARALLELISM = parseInt(argv.parallelism);
 }
 
 

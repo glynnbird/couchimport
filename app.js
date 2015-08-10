@@ -21,7 +21,7 @@ var importStream = function(rs, opts, callback) {
   opts = defaults.merge(opts);
 
   // load dependencies
-  var writer = require('./includes/writer.js')(opts.COUCH_URL, opts.COUCH_DATABASE, opts.COUCH_BUFFER_SIZE),
+  var writer = require('./includes/writer.js')(opts.COUCH_URL, opts.COUCH_DATABASE, opts.COUCH_BUFFER_SIZE, opts.COUCH_PARALLELISM),
       transformer = require('./includes/transformer.js')(opts.COUCH_TRANSFORM, opts.COUCH_META);
   
   // if this is a JSON stream

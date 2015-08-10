@@ -11,6 +11,7 @@ It can be used either as command-line utilities `couchimport` and `couchexport` 
 * plug in a custom function to add your own changes before the data is written
 * writes the data in bulk for speed
 * can also write huge JSON files using a streaming JSON parser
+* allows multiple writes to happen at once using the `--parallelism` option
 
 ![schematic](https://github.com/glynnbird/couchimport/raw/master/images/couchimport.png "Schematic Diagram")
 
@@ -266,3 +267,15 @@ The emitted data is an objet containing:
 
 * documents - the number of documents written in the last batch
 * total - the total number of documents written so far
+
+## Parallelism
+
+Using the `COUCH_PARALLELISM` environment variable or the `--parallelism` command-line option, couchimport can
+be configured to write data in multiple parallel operations. If you have the networkbandwidth, this can significantly
+speed up large data imports e.g.
+
+```
+  cat bigdata.csv | couchimport --db mydb --parallelism 10 --delimiter ","
+```
+
+

@@ -6,7 +6,8 @@ var defaults = {
   COUCH_BUFFER_SIZE:  500,
   COUCH_JSON_PATH: null,
   COUCH_TRANSFORM: null,
-  COUCH_META: null
+  COUCH_META: null,
+  COUCH_PARALLELISM: 1
 };
 
 var get = function() {
