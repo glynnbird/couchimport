@@ -11,7 +11,7 @@ var COUCH_URL="https://myuser:mypassword@myaccount.server2.com",
   MY_PARALLELISM = 43;
 
 
-describe('Command-line parameters', function() {
+describe('Environment variables', function() {
   
   before(function() {
     process.argv = ["node", "couchimport.js"];
@@ -28,54 +28,54 @@ describe('Command-line parameters', function() {
     config = require('../includes/config.js');
   });
   
-  it('respects the url parameter', function(done) {
+  it('respects the url variable', function(done) {
     config.COUCH_URL.should.be.a.String;
     config.COUCH_URL.should.equal(COUCH_URL);
     done();
   });
   
-  it('respects the db parameter', function(done) {
+  it('respects the db variable', function(done) {
     config.COUCH_DATABASE.should.be.a.String;
     config.COUCH_DATABASE.should.equal(MY_DATABASE);
     done();
   });
   
-  it('respects the transform parameter', function(done) {
+  it('respects the transform variable', function(done) {
     config.COUCH_TRANSFORM.should.be.a.Function;
     done();
   });
   
-  it('respects the delimiter parameter', function(done) {
+  it('respects the delimiter variable', function(done) {
     config.COUCH_DELIMITER.should.be.a.String;
     config.COUCH_DELIMITER.should.be.equal(MY_DELIMITER);
     done();
   });
   
-  it('respects the meta parameter', function(done) {
+  it('respects the meta variable', function(done) {
     var str = JSON.stringify(config.COUCHIMPORT_META);
     str.should.be.equal(MY_META);
     done();
   });
   
-  it('respects the type parameter', function(done) {
+  it('respects the type variable', function(done) {
     config.COUCH_FILETYPE.should.be.a.String;
     config.COUCH_FILETYPE.should.be.equal(MY_TYPE);
     done();
   });
   
-  it('respects the buffer parameter', function(done) {
+  it('respects the buffer variable', function(done) {
     config.COUCH_BUFFER_SIZE.should.be.a.Number;
     config.COUCH_BUFFER_SIZE.should.be.equal(parseInt(MY_BUFFER_SIZE));
     done();
   });
   
-  it('respects the jsonpath parameter', function(done) {
+  it('respects the jsonpath variable', function(done) {
     config.COUCH_JSON_PATH.should.be.a.String;
     config.COUCH_JSON_PATH.should.be.equal(MY_JSON_PATH);
     done();
   });
   
-  it('respects the parallelism parameter', function(done) {
+  it('respects the parallelism variable', function(done) {
     config.COUCH_PARALLELISM.should.be.a.Number;
     config.COUCH_PARALLELISM.should.be.equal(parseInt(MY_PARALLELISM));
     done();
