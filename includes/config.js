@@ -47,7 +47,7 @@ if( typeof process.env.COUCH_JSON_PATH != "undefined") {
 }
 
 // if there is a parallelism specified
-if( typeof process.env.COUCH_JSON_PATH != "undefined") {
+if( typeof process.env.COUCH_PARALLELISM != "undefined") {
   theconfig.COUCH_PARALLELISM = parseInt(process.env.COUCH_PARALLELISM);
 }
 
