@@ -1,6 +1,7 @@
 var defaults = require('./defaults.js'),
   theconfig = defaults.get(),
   debug = require('debug')('couchimport'),
+  path = require('path'),
   argv = require('minimist')(process.argv.slice(2));
 
 // configure the CouchDB paramss
@@ -18,7 +19,7 @@ if( typeof process.env.COUCH_DATABASE != "undefined") {
 
 // if we have a customised transformation function
 if( typeof process.env.COUCH_TRANSFORM != "undefined") {
-  theconfig.COUCH_TRANSFORM = require(process.env.COUCH_TRANSFORM)
+  theconfig.COUCH_TRANSFORM = require(path.resolve(__dirname,process.env.COUCH_TRANSFORM));
 }
 
 // if we have overridden the delimeter field
@@ -59,13 +60,13 @@ if(argv.db) {
   theconfig.COUCH_DATABASE = argv.db;
 }
 if(argv.transform) {
-  theconfig.COUCH_TRANSFORM = require(argv.transform)
+  theconfig.COUCH_TRANSFORM = require(path.resolve(__dirname,argv.transform))
 }
 if(argv.delimiter) {
   theconfig.COUCH_DELIMITER = argv.delimiter;
 }
 if(argv.meta) {
-  theconfig.COUCHIMPORT_META = argv.meta;
+  theconfig.COUCHIMPORT_META = JSON.parse(argv.meta);
 }
 if(argv.type && types.indexOf(argv.type)!=-1) {
   theconfig.COUCH_FILETYPE = argv.type;

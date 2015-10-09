@@ -21,6 +21,10 @@
     "debug": "2.2.0",
     "minimist": "1.2.0"
   },
+  "devDependencies": {
+    "mocha": "2.3.3",
+    "should": "6.0.3"
+  },
   "main": "./app.js",
   "bin": {
     "couchimport": "bin/couchimport.bin.js",
