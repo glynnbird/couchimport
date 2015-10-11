@@ -53,12 +53,12 @@ describe('Default parameters', function() {
     done();
   });
   
-  it('respects the jsonpath parameter', function(done) {
+  it('respects the default jsonpath', function(done) {
     should(config.COUCH_JSON_PATH).equal(null);
     done();
   });
   
-  it('respects the parallelism parameter', function(done) {
+  it('respects the default parallelism', function(done) {
     config.COUCH_PARALLELISM.should.be.a.Number;
     config.COUCH_PARALLELISM.should.be.equal(defaults.COUCH_PARALLELISM);
     done();
