@@ -19,7 +19,7 @@ if( typeof process.env.COUCH_DATABASE != "undefined") {
 
 // if we have a customised transformation function
 if( typeof process.env.COUCH_TRANSFORM != "undefined") {
-  theconfig.COUCH_TRANSFORM = require(path.resolve(__dirname,process.env.COUCH_TRANSFORM));
+  theconfig.COUCH_TRANSFORM = require(path.resolve(process.cwd(),process.env.COUCH_TRANSFORM));
 }
 
 // if we have overridden the delimeter field
@@ -60,7 +60,7 @@ if(argv.db) {
   theconfig.COUCH_DATABASE = argv.db;
 }
 if(argv.transform) {
-  theconfig.COUCH_TRANSFORM = require(path.resolve(__dirname,argv.transform))
+  theconfig.COUCH_TRANSFORM = require(path.resolve(process.cwd(),argv.transform))
 }
 if(argv.delimiter) {
   theconfig.COUCH_DELIMITER = argv.delimiter;

@@ -2,7 +2,7 @@ var should = require('should');
 
 var COUCH_URL="https://myuser:mypassword@myaccount.server2.com",
   MY_DATABASE = "mydatabase2",
-  MY_TRANSFORM = "../test/testtransform.js",
+  MY_TRANSFORM = "./test/testtransform.js",
   MY_DELIMITER = "&",
   MY_META = JSON.stringify({b:"mymeta"}),
   MY_TYPE = "json",
