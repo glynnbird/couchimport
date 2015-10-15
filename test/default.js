@@ -4,7 +4,8 @@ var should = require('should'),
 describe('Default parameters', function() {
   
   before(function() {
-   process.argv = [
+    process.env = {}
+    process.argv = [
                     "node", "couchimport.js"
                    ];
     
