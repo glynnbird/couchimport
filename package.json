@@ -22,7 +22,7 @@
     "minimist": "1.2.0"
   },
   "devDependencies": {
-    "mocha": "2.3.4",
+    "mocha": "2.4.2",
     "should": "8.1.0"
   },
   "main": "./app.js",
