@@ -245,6 +245,22 @@ To export data to a named file:
    });
 ```
 
+To preview a file:
+
+```
+    couchimport.previewCSVFile('./hp.csv', opts, function(err, data) {
+      console.log("done", err, data);
+    });
+```
+
+To preview a CSV/TSV on a URL:
+
+```
+    couchimport.previewURL('https://myhosting.com/hp.csv', opts, function(err, data) {
+      console.log("done", err, data);  
+    });
+```
+
 ## Monitoring an import
 
 Both `importStream` and `importFile` return an EventEmitter which emits 
