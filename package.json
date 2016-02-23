@@ -17,7 +17,7 @@
     "JSONStream": "1.0.7",
     "async": "1.5.2",
     "cloudant": "1.4.1",
-    "csv-parse": "1.0.1",
+    "csv-parse": "1.0.2",
     "debug": "2.2.0",
     "minimist": "1.2.0"
   },
