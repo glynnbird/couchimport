@@ -14,7 +14,7 @@
   "author": "Glynn Bird",
   "license": "Apache-2.0",
   "dependencies": {
-    "JSONStream": "1.0.7",
+    "JSONStream": "1.1.1",
     "async": "1.5.2",
     "cloudant": "1.4.1",
     "csv-parse": "1.0.2",
