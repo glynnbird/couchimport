@@ -50,11 +50,13 @@ var importStream = function(rs, opts, callback) {
       .pipe(writer); // write the data
   }
   
-  writer.on('writecomplete', function() {
-    callback(null, null);
+  writer.on('writecomplete', function(data) {
+    debugimport('writecomplete', data);
+    callback(null, data);
   });
   
   rs.on('error', function(e) {
+    debugimport('error', e);
     callback(e, null);
   });
   

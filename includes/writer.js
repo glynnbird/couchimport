@@ -1,4 +1,5 @@
 var async = require('async');
+var debug = require('debug')('couchimport');
 
 module.exports = function(couch_url, couch_database, buffer_size, parallelism) {
   
@@ -18,6 +19,7 @@ module.exports = function(couch_url, couch_database, buffer_size, parallelism) {
       } else {
         written += payload.docs.length;
         writer.emit("written", { documents: payload.docs.length, total: written});
+        debug({ documents: payload.docs.length, total: written});
       }
       cb();
     });
@@ -66,7 +68,7 @@ module.exports = function(couch_url, couch_database, buffer_size, parallelism) {
 
   // take an object
   writer._transform = function (obj, encoding, done) {
-    
+
     // add to the buffer, if it's not an empty object
     if (Object.keys(obj).length>0) {
       buffer.push(obj);
