@@ -5,7 +5,7 @@ module.exports = function(couch_url, couch_database, buffer_size, parallelism) {
   
   var stream = require('stream'),
     buffer = [ ],
-    written = 0;
+    written = totalfailed = 0;
     
   var cloudant = require('cloudant')(couch_url);
   var db = cloudant.db.use(couch_database);
@@ -17,9 +17,21 @@ module.exports = function(couch_url, couch_database, buffer_size, parallelism) {
       if (err) {
         writer.emit("writeerror", err);
       } else {
-        written += payload.docs.length;
-        writer.emit("written", { documents: payload.docs.length, total: written});
-        debug({ documents: payload.docs.length, total: written});
+        var ok = failed = 0;
+        for(var i in data) {
+          var d = data[i];
+          if (d.ok && d.rev) {
+            ok++;
+          } else {
+            failed++;
+            writer.emit("writefail", d);
+            debug(d);
+          }
+        }
+        written += ok;
+        totalfailed += failed
+        writer.emit("written", { documents: ok, failed: failed, total: written, totalfailed: totalfailed});
+        debug({ documents: ok, failed: failed, total: written, totalfailed: totalfailed});
       }
       cb();
     });
@@ -53,7 +65,7 @@ module.exports = function(couch_url, couch_database, buffer_size, parallelism) {
         
         function() {
           if (flush) {
-            writer.emit("writecomplete", { total: written });
+            writer.emit("writecomplete", { total: written , totalfailed: totalfailed});
           }
           callback();
         });

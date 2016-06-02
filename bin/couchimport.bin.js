@@ -8,7 +8,7 @@ var debug = require('debug')('couchimport'),
 couchimport.importStream(process.stdin, config, function(err,data) {
   debug("Import complete");
 }).on("written", function(data) {
-  debug("Written " + data.documents + " (" + data.total + ")");
+  debug("Written ok:" + data.documents + " - failed: " + data.failed + " -  (" + data.total + ")");
 }).on("writeerror", function(err) {
   debug("ERROR", err);
 });

@@ -266,8 +266,9 @@ To preview a CSV/TSV on a URL:
 Both `importStream` and `importFile` return an EventEmitter which emits 
 
 * `written` event on a successful write 
-* `writeerror` event when an event fails
+* `writeerror` event when a complete write operation fails
 * `writecomplete` event after the last write has finished
+* `writefail` event when an individual line in the CSV fails to be saved as a doc
 
 e.g.
 
@@ -275,7 +276,7 @@ e.g.
 couchimport.importFile("input.txt", opts, function(err,data) {
   console.log("done",err,data);
 }).on("written", function(data) {
-  // data = { documents: 500, total: 63000}
+  // data = { documents: 500, failed:6, total: 63000, totalfailed: 42}
 });
 ````
 
@@ -283,6 +284,8 @@ The emitted data is an objet containing:
 
 * documents - the number of documents written in the last batch
 * total - the total number of documents written so far
+* failed - the number of documents failed to write in the last batch
+* totalfailed - the number of documents that failed to write in total
 
 ## Parallelism
 
