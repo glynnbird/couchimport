@@ -44,8 +44,8 @@ describe('Input CSV file', function() {
       data.should.have.a.property.totalfailed;
       data.total.should.be.a.Number;
       data.totalfailed.should.be.a.Number;
-      data.total.should.equal(50);
-      data.totalfailed.should.equal(49);
+      data.total.should.equal(49);
+      data.totalfailed.should.equal(50);
       done();
     });
   });
