@@ -20,7 +20,8 @@ module.exports = function(couch_url, couch_database, buffer_size, parallelism) {
         var ok = failed = 0;
         for(var i in data) {
           var d = data[i];
-          if (d.id && d.rev) {
+          var isok = (d.id && d.rev)?true:false;
+          if (isok) {
             ok++;
           } else {
             failed++;
