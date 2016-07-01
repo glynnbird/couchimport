@@ -4,6 +4,35 @@ var parse = require('csv-parse');
 var fs = require('fs');
 var defaults = require('./defaults.js');
 
+var analyseString = function(str, callback) {
+  var lines = str.split("\n");
+  str = lines.splice(0,4).join("\n") + "\n"
+  var csv = parse(str, {delimiter: ',', columns: true, skip_empty_lines: true, relax: true}, function(err1, csvdata) {
+     var tsv = parse(str, {delimiter: '\t', columns: true, skip_empty_lines: true, relax: true}, function(err2, tsvdata) {
+          
+        var delimiter = '?'; // unknown
+
+        // look at CSV version
+        if (!err1) {
+          if (csvdata && csvdata.length>0 && Object.keys(csvdata[0]).length >1) {
+            delimiter = ',';
+            return callback(null, csvdata, delimiter);
+          }
+        }
+
+        // look at TSV version
+        if (!err2) {
+          if (tsvdata && tsvdata.length>0 && Object.keys(tsvdata[0]).length >1) {
+            delimiter = '\t';
+            return callback(null, tsvdata, delimiter);
+          }
+        }
+        // not sure what type of data it is
+        return callback(null, '', delimiter)
+    })
+  });
+}
+
 
 // preview a URL
 var first10kURL = function(u, callback) {
@@ -52,33 +81,32 @@ var url = function(u, opts, callback) {
     if (err) {
       return callback(err, null);
     }
-    var lines = data.split("\n");
-    str = lines.splice(0,4).join("\n") + "\n";
-    parse(str, {delimiter: opts.COUCH_DELIMITER, columns: true, skip_empty_lines: true, relax: true}, callback)
+    analyseString(data, callback);
   })
 };
 
 var file =  function(filename, opts, callback) { 
-  
   // merge default options
   opts = defaults.merge(opts);
- 
-  fs.open(filename, 'r', function(status, fd) {
-    if (status) {
-      return callback(status.message, null);
+  var rs = fs.createReadStream(filename, { encoding: 'utf8'});
+  stream(rs, opts, callback);
+};
+
+var stream = function(rs, opts, callback) {
+  var str = '';
+  rs.on('readable', function() {
+    str = rs.read(10000).toString('utf8');
+    rs.destroy(rs);
+    analyseString(str, callback);
+  }).on('error', function(e) {
+    if (!str) {
+      callback(e, null, '?');
     }
-    var buffer = new Buffer(10000);
-    fs.read(fd, buffer, 0, 10000, 0, function(err, num) {
-      var str = buffer.toString('utf-8', 0, num);
-      var lines = str.split("\n");
-      str = lines.splice(0,4).join("\n") + "\n";
-      fs.close(fd);
-      parse(str, {delimiter: opts.COUCH_DELIMITER, columns: true, skip_empty_lines: true, relax: true}, callback)
-    });
   });
 };
 
 module.exports = {
   file: file,
-  url: url
+  url: url,
+  stream: stream
 }

@@ -3,14 +3,27 @@ process.env.DEBUG=(process.env.DEBUG)?process.env.DEBUG+",couchimport":"couchimp
 var debug = require('debug')('couchimport'),
   couchimport = require('../app.js'),
   config = require('../includes/config.js');
-  
-// import data from a stdin  
-couchimport.importStream(process.stdin, config, function(err,data) {
-  debug("Import complete");
-}).on("written", function(data) {
-  debug("Written ok:" + data.documents + " - failed: " + data.failed + " -  (" + data.total + ")");
-}).on("writeerror", function(err) {
-  debug("ERROR", err);
-});
- 
+
+if(config.COUCH_PREVIEW) {
+  couchimport.previewStream(process.stdin, config, function(err, data, delimiter) {
+    switch(delimiter) {
+      case ',': console.log("Detected a COMMA column delimiter"); break;
+      case '\t': console.log("Detected a TAB column delimiter"); break;
+      default: console.log("Detected an unknown column delimiter"); break;
+    }
+    if (data && data.length > 0) {
+      console.log(data[0]);
+    }
+  });
+} else {
+  // import data from a stdin  
+  couchimport.importStream(process.stdin, config, function(err,data) {
+    debug("Import complete");
+  }).on("written", function(data) {
+    debug("Written ok:" + data.documents + " - failed: " + data.failed + " -  (" + data.total + ")");
+  }).on("writeerror", function(err) {
+    debug("ERROR", err);
+  });
+}
+
 

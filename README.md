@@ -114,6 +114,22 @@ Written 500  ( 2000 )
 
 The configuration, whether default or overriden from environment variables is show, followed by a line of output for each block of 500 documents written, plus a cumulative total.
 
+## Preview mode
+
+If you want to see a preview of the JSON that would be created from your csv/tsv files then add `--preview true` to your command-line:
+
+```
+    > cat text.txt | couchimport --preview true
+    Detected a TAB column delimiter
+    { product_id: '1',
+      brand: 'Gibson',
+      type: 'Electric',
+      range: 'ES 330',
+      sold: 'FALSE' }
+```
+
+As well as showing a JSON preview, preview mode also attempts to detect the column delimiter character for you.
+
 ## Importing large JSON documents
 
 If your source document is a GeoJSON text file, `couchimport` can be used. Let's say your JSON looks like this:
@@ -138,6 +154,7 @@ and we need to import each feature object into CouchDB as separate documents, th
 * COUCH_BUFFER_SIZE - the number of records written to CouchDB per bulk write (defaults to 500, not required)
 * COUCH_FILETYPE - the type of file being imported, either "text" or "json" (defaults to "text", not required)
 * COUCH_JSON_PATH - the path into the incoming JSON document (only required for COUCH_FILETYPE=json imports)
+* COUCH_PREVIEW - run in preview mode
 
 
 ## Command-line parameters
@@ -152,6 +169,7 @@ You can now optionally override the environment variables by passing in command-
 * --buffer - the number of records written to CouchDB per bulk write (defaults to 500, not required)
 * --type - the type of file being imported, either "text" or "json" (defaults to "text", not required)
 * --jsonpath - the path into the incoming JSON document (only required for type=json imports)
+* --preview - if 'true', runs in preview mode
 
 e.g.
 
@@ -192,6 +210,7 @@ N.B.
 * if subsequent documents have different keys, then unexpected things may happen
 * COUCH_DELIMETER or --delimiter can be used to provide a custom column delimiter
 * if your document values contain carriage returns or the column delimiter, then this may not be the tool for you
+
 
 ## Using programmatically
 
@@ -248,8 +267,8 @@ To export data to a named file:
 To preview a file:
 
 ```
-    couchimport.previewCSVFile('./hp.csv', opts, function(err, data) {
-      console.log("done", err, data);
+    couchimport.previewCSVFile('./hp.csv', opts, function(err, data, delimiter) {
+      console.log("done", err, data, delimiter);
     });
 ```
 
@@ -257,7 +276,7 @@ To preview a CSV/TSV on a URL:
 
 ```
     couchimport.previewURL('https://myhosting.com/hp.csv', opts, function(err, data) {
-      console.log("done", err, data);  
+      console.log("done", err, data, delimiter);  
     });
 ```
 

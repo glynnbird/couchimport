@@ -172,6 +172,12 @@ var previewCSVFile = preview.file;
 // callback - called when complete
 var previewURL = preview.url;
  
+
+// load the first 10k of a URL and parse the first 3 lines
+// URL - name of the file to load
+// opts - an options object, or null for defaults
+// callback - called when complete
+var previewStream = preview.stream;
  
 module.exports = {
   importStream: importStream,
@@ -179,5 +185,6 @@ module.exports = {
   exportStream: exportStream,
   exportFile: exportFile,
   previewCSVFile: previewCSVFile,
-  previewURL: previewURL
+  previewURL: previewURL,
+  previewStream: previewStream
 }

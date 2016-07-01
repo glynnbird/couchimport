@@ -52,6 +52,11 @@ if( typeof process.env.COUCH_PARALLELISM != "undefined") {
   theconfig.COUCH_PARALLELISM = parseInt(process.env.COUCH_PARALLELISM);
 }
 
+// if this is preview mode
+if( typeof process.env.COUCH_PREVIEW != "undefined") {
+  theconfig.COUCH_PREVIEW = true;
+}
+
 // override with command-line parameters
 if(argv.url) {
   theconfig.COUCH_URL = argv.url;
@@ -79,6 +84,9 @@ if(argv.jsonpath) {
 }
 if(argv.parallelism) {
   theconfig.COUCH_PARALLELISM = parseInt(argv.parallelism);
+}
+if(argv.preview) {
+  theconfig.COUCH_PREVIEW = true;
 }
 
 

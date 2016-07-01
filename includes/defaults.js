@@ -7,7 +7,8 @@ var defaults = {
   COUCH_JSON_PATH: null,
   COUCH_TRANSFORM: null,
   COUCH_META: null,
-  COUCH_PARALLELISM: 1
+  COUCH_PARALLELISM: 1,
+  COUCH_PREVIEW: false
 };
 
 var get = function() {
