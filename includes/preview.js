@@ -94,12 +94,21 @@ var file =  function(filename, opts, callback) {
 
 var stream = function(rs, opts, callback) {
   var str = '';
+  var calledback = false;
+
   rs.on('readable', function() {
-    str = rs.read(10000).toString('utf8');
+    var str = '';
+    while (null !== (chunk = rs.read())) {
+      str += chunk.toString('utf8');
+      if (chunk === null || str.length >=10000) {
+        break;
+      }
+    }
     rs.destroy(rs);
+    calledback = true;
     analyseString(str, callback);
   }).on('error', function(e) {
-    if (!str) {
+    if (!calledback) {
       callback(e, null, '?');
     }
   });
