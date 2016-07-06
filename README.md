@@ -1,5 +1,7 @@
 # CouchImport 
 
+[![Build Status](https://travis-ci.org/glynnbird/couchimport.svg?branch=master)](https://travis-ci.org/glynnbird/couchimport) [![npm version](https://badge.fury.io/js/couchimport.svg)](https://badge.fury.io/js/couchimport)
+
 ## Introduction
 
 When populating CouchDB databases, often the source of the data is initially a CSV or TSV file. CouchImport is designed to assist you with importing flat data into CouchDB efficiently. 
