@@ -30,5 +30,8 @@
   "bin": {
     "couchimport": "bin/couchimport.bin.js",
     "couchexport": "bin/couchexport.bin.js"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }
