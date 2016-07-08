@@ -71,6 +71,10 @@ var importFile = function(filename, opts, callback) {
   return importStream(fs.createReadStream(filename), opts, callback);
 };
 
+var strip = function(str) {
+  return str.replace(/\n/g,' ').replace(/\r/g,'');
+}
+
 // export to a writable stream
 // ws - writable stream
 // opts - an options object, or null for defaults
@@ -108,15 +112,15 @@ var exportStream = function (ws, opts, callback) {
   
     // output columns
     var cols = [];
-    for(var i in headings) {
-      var v = row[headings[i]];
+    for(var i in row) {
+      var v = row[i];
       var t = typeof v;
       if (v == null) {
         cols.push("null");
       } else if (t == "undefined") {
         cols.push("");
       } else if (t == "string") {
-        cols.push(v);
+        cols.push(strip(v));
       } else {
         cols.push(v.toString());
       }
