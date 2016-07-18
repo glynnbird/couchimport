@@ -83,7 +83,7 @@ module.exports = function(couch_url, couch_database, buffer_size, parallelism) {
   writer._transform = function (obj, encoding, done) {
 
     // add to the buffer, if it's not an empty object
-    if (Object.keys(obj).length>0) {
+    if (obj && typeof obj === 'object' && Object.keys(obj).length>0) {
       buffer.push(obj);
     }
 
