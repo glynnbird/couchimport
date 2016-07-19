@@ -47,7 +47,7 @@ or a local CouchDB installation:
 
 ### The name of the database - default "test"
 
-Define the name of the CouchDB database to write to by setting the "COUCH_DATABSE" environment variable e.g.
+Define the name of the CouchDB database to write to by setting the "COUCH_DATABASE" environment variable e.g.
 
 ```
   export COUCH_DATABASE="mydatabase"
@@ -67,7 +67,7 @@ The file should:
 
 (see examples directory). N.B it's best to use full paths for the transform function.
 
-### Delimiter - default "/t"
+### Delimiter - default "\t"
 
 The define the column delimiter in the input data e.g. 
 
