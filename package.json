@@ -22,7 +22,7 @@
     "minimist": "1.2.0"
   },
   "devDependencies": {
-    "mocha": "2.5.3",
+    "mocha": "3.1.2",
     "should": "9.0.2",
     "nock": "^8.0.0"
   },
