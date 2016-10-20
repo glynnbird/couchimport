@@ -112,8 +112,8 @@ var exportStream = function (ws, opts, callback) {
   
     // output columns
     var cols = [];
-    for(var i in row) {
-      var v = row[i];
+    for(var i in headings) {
+      var v = row[headings[i]];
       var t = typeof v;
       if (v == null) {
         cols.push("null");
