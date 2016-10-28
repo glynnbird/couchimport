@@ -24,7 +24,7 @@
   "devDependencies": {
     "mocha": "2.5.3",
     "should": "9.0.2",
-    "nock": "^8.0.0"
+    "nock": "^9.0.2"
   },
   "main": "./app.js",
   "bin": {
