@@ -1,7 +1,7 @@
 var async = require('async');
 var debug = require('debug')('couchimport');
 
-module.exports = function(couch_url, couch_database, buffer_size, parallelism) {
+module.exports = function(couch_url, couch_database, buffer_size, parallelism, ignore_fields) {
   
   var stream = require('stream'),
     buffer = [ ],
@@ -84,7 +84,12 @@ module.exports = function(couch_url, couch_database, buffer_size, parallelism) {
 
     // add to the buffer, if it's not an empty object
     if (obj && typeof obj === 'object' && Object.keys(obj).length>0) {
-      buffer.push(obj);
+      ignore_fields.forEach(function(f) {
+        delete obj[f];
+      });
+      if (Object.keys(obj).length>0) {
+        buffer.push(obj);
+      }
     }
 
     // optionally write to the buffer

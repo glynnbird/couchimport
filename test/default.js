@@ -64,6 +64,12 @@ describe('Default parameters', function() {
     config.COUCH_PARALLELISM.should.be.equal(defaults.COUCH_PARALLELISM);
     done();
   });
+
+    it('respects the default parallelism', function(done) {
+    config.COUCH_IGNORE_FIELDS.should.be.an.Object;
+    config.COUCH_IGNORE_FIELDS.length.should.be.equal(0);
+    done();
+  });
   
   after( function() {
     config = null;

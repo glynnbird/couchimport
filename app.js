@@ -1,5 +1,6 @@
 var fs = require('fs'),
   async = require('async'),
+  _ = require('underscore'),
   debugimport = require('debug')('couchimport'),
   debugexport = require('debug')('couchexport'),
   defaults = require('./includes/defaults.js'),
@@ -21,7 +22,7 @@ var importStream = function(rs, opts, callback) {
   opts = defaults.merge(opts);
 
   // load dependencies
-  var writer = require('./includes/writer.js')(opts.COUCH_URL, opts.COUCH_DATABASE, opts.COUCH_BUFFER_SIZE, opts.COUCH_PARALLELISM),
+  var writer = require('./includes/writer.js')(opts.COUCH_URL, opts.COUCH_DATABASE, opts.COUCH_BUFFER_SIZE, opts.COUCH_PARALLELISM, opts.COUCH_IGNORE_FIELDS),
       transformer = require('./includes/transformer.js')(opts.COUCH_TRANSFORM, opts.COUCH_META);
   
   // if this is a JSON stream
@@ -105,8 +106,11 @@ var exportStream = function (ws, opts, callback) {
     }
   
     // if we are extracting headings
-    if (headings.length ==0) {
+    if (headings.length == 0) {
       headings = Object.keys(row);
+      opts.COUCH_IGNORE_FIELDS.forEach(function(f) {
+        headings = _.without(headings, f);
+      });
       ws.write(headings.join(opts.COUCH_DELIMITER) + "\n");
     }
   

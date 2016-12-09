@@ -157,7 +157,7 @@ and we need to import each feature object into CouchDB as separate documents, th
 * COUCH_FILETYPE - the type of file being imported, either "text" or "json" (defaults to "text", not required)
 * COUCH_JSON_PATH - the path into the incoming JSON document (only required for COUCH_FILETYPE=json imports)
 * COUCH_PREVIEW - run in preview mode
-
+* COUCH_IGNORE_FIELDS - a comma-separated list of field names to ignore on import or export e.g. price,url,image
 
 ## Command-line parameters
 
@@ -172,6 +172,7 @@ You can now optionally override the environment variables by passing in command-
 * --type - the type of file being imported, either "text" or "json" (defaults to "text", not required)
 * --jsonpath - the path into the incoming JSON document (only required for type=json imports)
 * --preview - if 'true', runs in preview mode
+* --ignorefields - a comma-separated list of fields to ignore input or output
 
 e.g.
 

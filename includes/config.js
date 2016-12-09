@@ -4,7 +4,7 @@ var defaults = require('./defaults.js'),
   path = require('path'),
   argv = require('minimist')(process.argv.slice(2));
 
-// configure the CouchDB paramss
+// configure the CouchDB params
 var types = ["text","json"];
 
 // if we have a custom CouchDB url
@@ -57,6 +57,11 @@ if( typeof process.env.COUCH_PREVIEW != "undefined") {
   theconfig.COUCH_PREVIEW = true;
 }
 
+// list of field names to ignore
+if( typeof process.env.COUCH_IGNORE_FIELDS != "undefined") {
+  theconfig.COUCH_IGNORE_FIELDS = process.env.COUCH_IGNORE_FIELDS.split(',');
+}
+
 // override with command-line parameters
 if(argv.url) {
   theconfig.COUCH_URL = argv.url;
@@ -88,7 +93,9 @@ if(argv.parallelism) {
 if(argv.preview) {
   theconfig.COUCH_PREVIEW = true;
 }
-
+if(argv.ignorefields) {
+  theconfig.COUCH_IGNORE_FIELDS = argv.ignorefields.split(',');
+}
 
 debug("******************");
 debug("configuration");
