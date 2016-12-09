@@ -8,7 +8,8 @@ var defaults = {
   COUCH_TRANSFORM: null,
   COUCH_META: null,
   COUCH_PARALLELISM: 1,
-  COUCH_PREVIEW: false
+  COUCH_PREVIEW: false,
+  COUCH_IGNORE_FIELDS: []
 };
 
 var get = function() {

@@ -8,7 +8,8 @@ var COUCH_URL="https://myuser:mypassword@myaccount.server.com",
   MY_TYPE = "text",
   MY_BUFFER_SIZE = "1000",
   MY_JSON_PATH = "abc123",
-  MY_PARALLELISM = 42;
+  MY_PARALLELISM = 42,
+  MY_IGNORE = "a,b";
 
 
 describe('Command-line parameters', function() {
@@ -24,7 +25,8 @@ describe('Command-line parameters', function() {
                      "--type", MY_TYPE,
                      "--buffer", MY_BUFFER_SIZE,
                      "--jsonpath", MY_JSON_PATH,
-                     "--parallelism", MY_PARALLELISM
+                     "--parallelism", MY_PARALLELISM,
+                     "--ignorefields", MY_IGNORE
                    ];
     
     config = require('../includes/config.js');
@@ -80,6 +82,13 @@ describe('Command-line parameters', function() {
   it('respects the parallelism parameter', function(done) {
     config.COUCH_PARALLELISM.should.be.a.Number;
     config.COUCH_PARALLELISM.should.be.equal(parseInt(MY_PARALLELISM));
+    done();
+  });
+
+  it('respects the parallelism parameter', function(done) {
+    config.COUCH_IGNORE_FIELDS.should.be.an.Object;
+    config.COUCH_IGNORE_FIELDS.length.should.be.a.Number;
+    config.COUCH_IGNORE_FIELDS.length.should.be.equal(2);
     done();
   });
   

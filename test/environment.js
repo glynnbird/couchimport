@@ -9,6 +9,7 @@ var COUCH_URL="https://myuser:mypassword@myaccount.server2.com",
   MY_BUFFER_SIZE = "1001",
   MY_JSON_PATH = "abc1234",
   MY_PARALLELISM = 43;
+  COUCH_IGNORE_FIELDS = "a,b";
 
 
 describe('Environment variables', function() {
@@ -24,6 +25,7 @@ describe('Environment variables', function() {
     process.env.COUCH_BUFFER_SIZE = MY_BUFFER_SIZE;
     process.env.COUCH_JSON_PATH = MY_JSON_PATH;
     process.env.COUCH_PARALLELISM = MY_PARALLELISM;
+    process.env.COUCH_IGNORE_FIELDS = COUCH_IGNORE_FIELDS;
     
     config = require('../includes/config.js');
   });
@@ -80,6 +82,13 @@ describe('Environment variables', function() {
     config.COUCH_PARALLELISM.should.be.equal(parseInt(MY_PARALLELISM));
     done();
   });
+
+  it('respects the ignore variable', function(done) {
+    config.COUCH_IGNORE_FIELDS.should.be.an.Objet;
+    config.COUCH_IGNORE_FIELDS.length.should.be.a.Number;
+    config.COUCH_IGNORE_FIELDS.length.should.be.equal(2);
+    done();
+  })
   
   after(function() {
     delete require.cache[require.resolve('../includes/config.js')]
@@ -92,6 +101,7 @@ describe('Environment variables', function() {
     delete process.env.COUCH_BUFFER_SIZE;
     delete process.env.COUCH_JSON_PATH;
     delete process.env.COUCH_PARALLELISM;
+    delete process.env.COUCH_IGNORE_FIELDS;
     
   })
 });
