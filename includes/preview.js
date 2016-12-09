@@ -40,10 +40,8 @@ var first10kURL = function(u, callback) {
   var onceonly = false;
   
   var alldone = function() {
-    console.log("ad");
     if (!onceonly) {
       var str = b.toString('utf8');
-      console.log("str", str.length);
       onceonly = true;
       callback(null, str);
     }
@@ -61,7 +59,6 @@ var first10kURL = function(u, callback) {
   
   agent.get(u, function(rs) {
     rs.on('data', function (d) { 
-        console.log("chunk", d.length)
         b = Buffer.concat([b,d]);
         if (b.length > 10000) {
           rs.destroy();
