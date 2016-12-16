@@ -102,8 +102,10 @@ var stream = function(rs, opts, callback) {
       }
     }
     rs.destroy(rs);
-    calledback = true;
-    analyseString(str, callback);
+    if (!calledback) {
+      calledback = true;
+      analyseString(str, callback);
+    }
   }).on('error', function(e) {
     if (!calledback) {
       callback(e, null, '?');
