@@ -34,7 +34,7 @@ if (typeof process.env.COUCHIMPORT_META != "undefined") {
 
 // if there is type specified
 if (typeof process.env.COUCH_FILETYPE == "string" && types.indexOf(process.env.COUCH_FILETYPE) != -1) {
-  theconfig.COUCH_FILETYPE = "json";
+  theconfig.COUCH_FILETYPE = process.env.COUCH_FILETYPE;
 }
 
 // if there is a buffer size specified
