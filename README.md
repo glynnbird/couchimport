@@ -166,6 +166,26 @@ and we need to import each line as a JSON object into CouchDB as separate docume
 
 ```
   cat myfile.json | couchimport --db mydb --type jsonl
+```
+
+## Importing a stream of JSONs
+
+If your source data is a lot of JSON objects meshed or appended together, `couchimport` can be used. Let's say your file:
+
+```
+{"a":1}{"a":2}  {"a":3}{"a":4}
+{"a":5}          {"a":6}
+{"a":7}{"a":8}
+
+
+
+{"a":9}
+```
+
+and we need to import each JSON objet to CouchDB as separate documents, then this can be imported using the `type="jsonl"` argument:
+
+```
+  cat myfile.json.blob | couchimport --db mydb --type jsonl
 ``` 
 
 ## Environment variables
