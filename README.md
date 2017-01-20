@@ -146,6 +146,48 @@ and we need to import each feature object into CouchDB as separate documents, th
   cat myfile.json | couchimport --db mydb --type json --jsonpath "features.*"
 ``` 
 
+## Importing JSON Lines file
+
+If your source document is a [JSON Lines](http://jsonlines.org/) text file, `couchimport` can be used. Let's say your JSON Lines looks like this:
+
+```
+{"a":1}
+{"a":2}
+{"a":3}
+{"a":4}
+{"a":5}
+{"a":6}
+{"a":7}
+{"a":8}
+{"a":9}
+```
+
+and we need to import each line as a JSON object into CouchDB as separate documents, then this can be imported using the `type="jsonl"` argument:
+
+```
+  cat myfile.json | couchimport --db mydb --type jsonl
+```
+
+## Importing a stream of JSONs
+
+If your source data is a lot of JSON objects meshed or appended together, `couchimport` can be used. Let's say your file:
+
+```
+{"a":1}{"a":2}  {"a":3}{"a":4}
+{"a":5}          {"a":6}
+{"a":7}{"a":8}
+
+
+
+{"a":9}
+```
+
+and we need to import each JSON objet to CouchDB as separate documents, then this can be imported using the `type="jsonl"` argument:
+
+```
+  cat myfile.json.blob | couchimport --db mydb --type jsonl
+``` 
+
 ## Environment variables
 
 * COUCH_URL - the url of the CouchDB instance (required, or to be supplied on the command line)
@@ -154,7 +196,7 @@ and we need to import each feature object into CouchDB as separate documents, th
 * COUCH_TRANSFORM - the path of a transformation function (not required)
 * COUCHIMPORT_META - a json object which will be passed to the transform function (not required)
 * COUCH_BUFFER_SIZE - the number of records written to CouchDB per bulk write (defaults to 500, not required)
-* COUCH_FILETYPE - the type of file being imported, either "text" or "json" (defaults to "text", not required)
+* COUCH_FILETYPE - the type of file being imported, either "text", "json" or "jsonl" (defaults to "text", not required)
 * COUCH_JSON_PATH - the path into the incoming JSON document (only required for COUCH_FILETYPE=json imports)
 * COUCH_PREVIEW - run in preview mode
 * COUCH_IGNORE_FIELDS - a comma-separated list of field names to ignore on import or export e.g. price,url,image
@@ -169,7 +211,7 @@ You can now optionally override the environment variables by passing in command-
 * --transform - the path of a transformation function (not required)
 * --meta - a json object which will be passed to the transform function (not required)
 * --buffer - the number of records written to CouchDB per bulk write (defaults to 500, not required)
-* --type - the type of file being imported, either "text" or "json" (defaults to "text", not required)
+* --type - the type of file being imported, either "text", "json" or "jsonl" (defaults to "text", not required)
 * --jsonpath - the path into the incoming JSON document (only required for type=json imports)
 * --preview - if 'true', runs in preview mode
 * --ignorefields - a comma-separated list of fields to ignore input or output
