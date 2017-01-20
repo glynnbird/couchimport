@@ -104,7 +104,19 @@ var stream = function(rs, opts, callback) {
     rs.destroy(rs);
     if (!calledback) {
       calledback = true;
-      analyseString(str, callback);
+      analyseString(str, function (err, data, delimiter) {
+
+        // allow transformation in preview 
+        if (opts.COUCH_TRANSFORM && typeof opts.COUCH_TRANSFORM === 'function') {
+          var func = opts.COUCH_TRANSFORM;
+          for (var i in data) {
+            data[i] = func(data[i], opts.COUCH_META);
+          }
+        }
+
+        callback(err, data, delimiter);
+
+      });
     }
   }).on('error', function(e) {
     if (!calledback) {
