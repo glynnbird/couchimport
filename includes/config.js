@@ -69,6 +69,9 @@ if (argv.url) {
 if (argv.db) {
   theconfig.COUCH_DATABASE = argv.db;
 }
+if (argv.database) {
+  theconfig.COUCH_DATABASE = argv.database;
+}
 if (argv.transform) {
   theconfig.COUCH_TRANSFORM = require(path.resolve(process.cwd(), argv.transform))
 }
@@ -86,6 +89,9 @@ if (argv.buffer) {
 }
 if (argv.jsonpath) {
   theconfig.COUCH_JSON_PATH = argv.jsonpath;
+}
+if (argv.json-path) {
+  theconfig.COUCH_JSON_PATH = argv.json-path;
 }
 if (argv.parallelism) {
   theconfig.COUCH_PARALLELISM = parseInt(argv.parallelism);
