@@ -93,13 +93,18 @@ if (argv.parallelism) {
 if (argv.preview) {
   theconfig.COUCH_PREVIEW = true;
 }
+if (argv.version) {
+  theconfig.COUCHIMPORT_VERSION = true;
+}
 if (argv.ignorefields) {
   theconfig.COUCH_IGNORE_FIELDS = argv.ignorefields.split(',');
 }
 
-debug("******************");
-debug("configuration");
-debug(JSON.stringify(theconfig, null, ' ').replace(/\/\/.+@/g, "//****:****@"));
-debug("******************");
+if(!theconfig.COUCHIMPORT_VERSION) {
+    debug("******************");
+    debug("configuration");
+    debug(JSON.stringify(theconfig, null, ' ').replace(/\/\/.+@/g, "//****:****@"));
+    debug("******************");
+}
 
 module.exports = theconfig;
