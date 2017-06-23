@@ -29,7 +29,7 @@ Requirements
 
 ## Configuration
 
-CouchImport's configuration parameters are stored in environment variables.
+CouchImport's configuration parameters can be stored in environment variables or supplied as command line arguments.
 
 ### The location of CouchDB - default "http://localhost:5984"
 
@@ -114,7 +114,7 @@ Written 500  ( 2000 )
 
 ```
 
-The configuration, whether default or overriden from environment variables is show, followed by a line of output for each block of 500 documents written, plus a cumulative total.
+The configuration, whether default or overriden by environment variables or command line arguments, is shown.  This is followed by a line of output for each block of 500 documents written, plus a cumulative total.
 
 ## Preview mode
 
@@ -203,8 +203,9 @@ and we need to import each JSON objet to CouchDB as separate documents, then thi
 
 ## Command-line parameters
 
-You can now optionally override the environment variables by passing in command-line parameters:
+You can also configure `couchimport` and `couchexport` using command-line parameters:
 
+* --version - simply prints the version and exits
 * --url - the url of the CouchDB instance (required, or to be supplied in the environment)
 * --db - the database to deal with (required, or to be supplied in the environment)
 * --delimiter - the delimiter to use (default '\t', not required)

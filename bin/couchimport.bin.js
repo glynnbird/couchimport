@@ -4,7 +4,12 @@ var debug = require('debug')('couchimport'),
   couchimport = require('../app.js'),
   config = require('../includes/config.js');
 
-if(config.COUCH_PREVIEW) {
+if(config.COUCHIMPORT_VERSION) {
+  // if this is set, just print the version and exit
+  var package_json = require('../package.json');
+  console.log(package_json.version);
+  process.exit();
+} else if(config.COUCH_PREVIEW) {
   couchimport.previewStream(process.stdin, config, function(err, data, delimiter) {
     switch(delimiter) {
       case ',': console.log("Detected a COMMA column delimiter"); break;
