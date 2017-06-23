@@ -140,10 +140,10 @@ If your source document is a GeoJSON text file, `couchimport` can be used. Let's
 { "features": [ { "a":1}, {"a":2}] }
 ```
 
-and we need to import each feature object into CouchDB as separate documents, then this can be imported using the `type="json"` argument and specifying the JSON path using the `jsonpath` argument:
+and we need to import each feature object into CouchDB as separate documents, then this can be imported using the `type="json"` argument and specifying the JSON path using the `json-path` argument:
 
 ```
-  cat myfile.json | couchimport --db mydb --type json --jsonpath "features.*"
+  cat myfile.json | couchimport --database mydb --type json --json-path "features.*"
 ``` 
 
 ## Importing JSON Lines file
@@ -165,7 +165,7 @@ If your source document is a [JSON Lines](http://jsonlines.org/) text file, `cou
 and we need to import each line as a JSON object into CouchDB as separate documents, then this can be imported using the `type="jsonl"` argument:
 
 ```
-  cat myfile.json | couchimport --db mydb --type jsonl
+  cat myfile.json | couchimport --database mydb --type jsonl
 ```
 
 ## Importing a stream of JSONs
@@ -185,7 +185,7 @@ If your source data is a lot of JSON objects meshed or appended together, `couch
 and we need to import each JSON objet to CouchDB as separate documents, then this can be imported using the `type="jsonl"` argument:
 
 ```
-  cat myfile.json.blob | couchimport --db mydb --type jsonl
+  cat myfile.json.blob | couchimport --database mydb --type jsonl
 ``` 
 
 ## Environment variables
@@ -207,20 +207,20 @@ You can also configure `couchimport` and `couchexport` using command-line parame
 
 * --version - simply prints the version and exits
 * --url - the url of the CouchDB instance (required, or to be supplied in the environment)
-* --db - the database to deal with (required, or to be supplied in the environment)
+* --database (or --db) - the database to deal with (required, or to be supplied in the environment)
 * --delimiter - the delimiter to use (default '\t', not required)
 * --transform - the path of a transformation function (not required)
 * --meta - a json object which will be passed to the transform function (not required)
 * --buffer - the number of records written to CouchDB per bulk write (defaults to 500, not required)
 * --type - the type of file being imported, either "text", "json" or "jsonl" (defaults to "text", not required)
-* --jsonpath - the path into the incoming JSON document (only required for type=json imports)
+* --json-path - the path into the incoming JSON document (only required for type=json imports)
 * --preview - if 'true', runs in preview mode
 * --ignorefields - a comma-separated list of fields to ignore input or output
 
 e.g.
 
 ```
-    cat test.csv | couchimport --db bob --delimeter ","
+    cat test.csv | couchimport --database  bob --delimeter ","
 ```
 
 ## couchexport
@@ -246,7 +246,7 @@ If you have structured data in a CouchDB or Cloudant that has fixed keys and val
 then it can be exported to a CSV like so:
 
 ```
-    couchexport --db animaldb > test.csv
+    couchexport --database  animaldb > test.csv
 ```
 
 N.B.
@@ -254,7 +254,7 @@ N.B.
 * design documents are ignored
 * the first non-design document is used to define the headings
 * if subsequent documents have different keys, then unexpected things may happen
-* COUCH_DELIMETER or --delimiter can be used to provide a custom column delimiter
+* COUCH_DELIMITER or --delimiter can be used to provide a custom column delimiter
 * if your document values contain carriage returns or the column delimiter, then this may not be the tool for you
 
 
@@ -345,7 +345,7 @@ couchimport.importFile("input.txt", opts, function(err,data) {
 });
 ````
 
-The emitted data is an objet containing:
+The emitted data is an object containing:
 
 * documents - the number of documents written in the last batch
 * total - the total number of documents written so far
@@ -359,7 +359,7 @@ be configured to write data in multiple parallel operations. If you have the net
 speed up large data imports e.g.
 
 ```
-  cat bigdata.csv | couchimport --db mydb --parallelism 10 --delimiter ","
+  cat bigdata.csv | couchimport --database mydb --parallelism 10 --delimiter ","
 ```
 
 
