@@ -243,18 +243,24 @@ If you have structured data in a CouchDB or Cloudant that has fixed keys and val
 }
 ```
 
-then it can be exported to a CSV like so:
+then it can be exported to a CSV like so (note how we set the delimiter):
 
 ```
-    couchexport --database  animaldb > test.csv
+    couchexport --url http://localhost:5984 --database animaldb --delimiter "," > test.csv
 ```
+or to a TSV like so (we don't need to specify the delimiter since tab `\t` is the default):
+
+```
+    couchexport --url http://localhost:5984 --database animaldb > test.tsv
+```
+
 
 N.B.
 
 * design documents are ignored
 * the first non-design document is used to define the headings
 * if subsequent documents have different keys, then unexpected things may happen
-* COUCH_DELIMITER or --delimiter can be used to provide a custom column delimiter
+* COUCH_DELIMITER or --delimiter can be used to provide a custom column delimiter (not required when tab-delimited)
 * if your document values contain carriage returns or the column delimiter, then this may not be the tool for you
 
 
