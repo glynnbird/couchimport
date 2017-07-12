@@ -220,7 +220,7 @@ You can also configure `couchimport` and `couchexport` using command-line parame
 e.g.
 
 ```
-    cat test.csv | couchimport --database  bob --delimeter ","
+    cat test.csv | couchimport --database  bob --delimiter ","
 ```
 
 ## couchexport
