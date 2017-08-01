@@ -140,10 +140,10 @@ If your source document is a GeoJSON text file, `couchimport` can be used. Let's
 { "features": [ { "a":1}, {"a":2}] }
 ```
 
-and we need to import each feature object into CouchDB as separate documents, then this can be imported using the `type="json"` argument and specifying the JSON path using the `json-path` argument:
+and we need to import each feature object into CouchDB as separate documents, then this can be imported using the `type="json"` argument and specifying the JSON path using the `jsonpath` argument:
 
 ```
-  cat myfile.json | couchimport --database mydb --type json --json-path "features.*"
+  cat myfile.json | couchimport --database mydb --type json --jsonpath "features.*"
 ``` 
 
 ## Importing JSON Lines file
@@ -213,7 +213,7 @@ You can also configure `couchimport` and `couchexport` using command-line parame
 * --meta - a json object which will be passed to the transform function (not required)
 * --buffer - the number of records written to CouchDB per bulk write (defaults to 500, not required)
 * --type - the type of file being imported, either "text", "json" or "jsonl" (defaults to "text", not required)
-* --json-path - the path into the incoming JSON document (only required for type=json imports)
+* --jsonpath - the path into the incoming JSON document (only required for type=json imports)
 * --preview - if 'true', runs in preview mode
 * --ignorefields - a comma-separated list of fields to ignore input or output
 
