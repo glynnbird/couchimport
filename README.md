@@ -1,10 +1,10 @@
-# CouchImport 
+# CouchImport
 
 [![Build Status](https://travis-ci.org/glynnbird/couchimport.svg?branch=master)](https://travis-ci.org/glynnbird/couchimport) [![npm version](https://badge.fury.io/js/couchimport.svg)](https://badge.fury.io/js/couchimport)
 
 ## Introduction
 
-When populating CouchDB databases, often the source of the data is initially a CSV or TSV file. CouchImport is designed to assist you with importing flat data into CouchDB efficiently. 
+When populating CouchDB databases, often the source of the data is initially a CSV or TSV file. CouchImport is designed to assist you with importing flat data into CouchDB efficiently.
 It can be used either as command-line utilities `couchimport` and `couchexport` or the underlying functions can be used programatically:
 
 * simply pipe the data file to 'couchimport' on the command line
@@ -55,21 +55,22 @@ Define the name of the CouchDB database to write to by setting the "COUCH_DATABA
 
 ### Transformation function - default nothing
 
-Define the path of a file containing a transformation function e.g. 
+Define the path of a file containing a transformation function e.g.
 
 ```
   export COUCH_TRANSFORM="/home/myuser/transform.js"
 ```
 
-The file should: 
-* be a javascript file 
-* export one function that takes a single doc and returns the transformed version synchronously
+The file should:
+* be a javascript file
+* export one function that takes a single doc and returns a single object or
+  an array of objects if you need to split a row into multiple docs.
 
 (see examples directory). N.B it's best to use full paths for the transform function.
 
 ### Delimiter - default "\t"
 
-The define the column delimiter in the input data e.g. 
+The define the column delimiter in the input data e.g.
 
 ```
   export COUCH_DELIMITER=","
@@ -144,7 +145,7 @@ and we need to import each feature object into CouchDB as separate documents, th
 
 ```
   cat myfile.json | couchimport --database mydb --type json --json-path "features.*"
-``` 
+```
 
 ## Importing JSON Lines file
 
@@ -186,7 +187,7 @@ and we need to import each JSON objet to CouchDB as separate documents, then thi
 
 ```
   cat myfile.json.blob | couchimport --database mydb --type jsonl
-``` 
+```
 
 ## Environment variables
 
@@ -290,7 +291,7 @@ To import data from a readable stream (rs):
     });
 ```
 
-To import data from a named file: 
+To import data from a named file:
 
 ```
     couchimport.importFile("input.txt", opts, function(err,data) {
@@ -334,9 +335,9 @@ To preview a CSV/TSV on a URL:
 
 ## Monitoring an import
 
-Both `importStream` and `importFile` return an EventEmitter which emits 
+Both `importStream` and `importFile` return an EventEmitter which emits
 
-* `written` event on a successful write 
+* `written` event on a successful write
 * `writeerror` event when a complete write operation fails
 * `writecomplete` event after the last write has finished
 * `writefail` event when an individual line in the CSV fails to be saved as a doc
@@ -367,5 +368,3 @@ speed up large data imports e.g.
 ```
   cat bigdata.csv | couchimport --database mydb --parallelism 10 --delimiter ","
 ```
-
-
