@@ -144,8 +144,8 @@ If your source document is a GeoJSON text file, `couchimport` can be used. Let's
 and we need to import each feature object into CouchDB as separate documents, then this can be imported using the `type="json"` argument and specifying the JSON path using the `json-path` argument:
 
 ```
-  cat myfile.json | couchimport --database mydb --type json --json-path "features.*"
-```
+  cat myfile.json | couchimport --database mydb --type json --jsonpath "features.*"
+``` 
 
 ## Importing JSON Lines file
 
