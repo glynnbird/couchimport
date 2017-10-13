@@ -5,7 +5,7 @@
 ## Introduction
 
 When populating CouchDB databases, often the source of the data is initially a CSV or TSV file. CouchImport is designed to assist you with importing flat data into CouchDB efficiently.
-It can be used either as command-line utilities `couchimport` and `couchexport` or the underlying functions can be used programatically:
+It can be used either as command-line utilities `couchimport` and `couchexport` or the underlying functions can be used programmatically:
 
 * simply pipe the data file to 'couchimport' on the command line
 * handles tab or comma separated data
