@@ -7,7 +7,7 @@ module.exports = function(couch_url, couch_database, buffer_size, parallelism, i
     buffer = [ ],
     written = totalfailed = 0;
     
-  var cloudant = require('cloudant')(couch_url);
+  var cloudant = require('@cloudant/cloudant')(couch_url);
   var db = cloudant.db.use(couch_database);
 
 
