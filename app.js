@@ -1,6 +1,5 @@
 const fs = require('fs')
 const async = require('async')
-const _ = require('underscore')
 const debugimport = require('debug')('couchimport')
 const debugexport = require('debug')('couchexport')
 const preview = require('./includes/preview.js')
@@ -110,8 +109,11 @@ const exportStream = function (ws, opts, callback) {
     if (headings.length === 0) {
       headings = Object.keys(row)
       if (opts.ignorefields) {
-        opts.ignorefields.forEach(function (f) {
-          headings = _.without(headings, f)
+        let h = []
+        headings.forEach(function(f) {
+          if (!opts.ignorefields.includes(f)) {
+            h.push(f)
+          }
         })
       }
       ws.write(headings.join(opts.delimiter) + '\n')
