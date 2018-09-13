@@ -1,34 +1,58 @@
 #!/usr/bin/env node
-process.env.DEBUG=(process.env.DEBUG)?process.env.DEBUG+",couchimport":"couchimport"
-var debug = require('debug')('couchimport'),
-  couchimport = require('../app.js'),
-  config = require('../includes/config.js');
+process.env.DEBUG = (process.env.DEBUG) ? process.env.DEBUG + ',couchimport' : 'couchimport'
+const debug = require('debug')('couchimport')
+const couchimport = require('../app.js')
+const argv = require('../includes/args.js').parse()
 
-if(config.COUCHIMPORT_VERSION) {
-  // if this is set, just print the version and exit
-  var package_json = require('../package.json');
-  console.log(package_json.version);
-  process.exit();
-} else if(config.COUCH_PREVIEW) {
-  couchimport.previewStream(process.stdin, config, function(err, data, delimiter) {
-    switch(delimiter) {
-      case ',': console.log("Detected a COMMA column delimiter"); break;
-      case '\t': console.log("Detected a TAB column delimiter"); break;
-      default: console.log("Detected an unknown column delimiter"); break;
+// output selected options
+const options = ['url', 'database', 'delimiter', 'transform', 'meta', 'buffer', 'parallelism', 'type', 'json-path', 'preview', 'ignorefields']
+console.log('couchimport')
+console.log('-----------')
+for (let i in options) {
+  if (argv[options[i]]) {
+    const k = options[i].padEnd(11, ' ')
+    let v
+    if (options[i] === 'url') {
+      v = JSON.stringify(argv[options[i]].replace(/\/\/.+@/, '//****:****@'))
+    } else {
+      v = JSON.stringify(argv[options[i]])
+    }
+    console.log('', k, ':', v)
+  }
+}
+console.log('-----------')
+
+// if preview mode
+if (argv.preview) {
+  couchimport.previewStream(process.stdin, argv, function (err, data, delimiter) {
+    if (err) {
+      console.log('Error', err)
+    }
+    switch (delimiter) {
+      case ',':
+        console.log('Detected a COMMA column delimiter')
+        break
+      case '\t':
+        console.log('Detected a TAB column delimiter')
+        break
+      default:
+        console.log('Detected an unknown column delimiter')
+        break
     }
     if (data && data.length > 0) {
-      console.log(data[0]);
+      console.log(data[0])
     }
-  });
+  })
 } else {
-  // import data from a stdin  
-  couchimport.importStream(process.stdin, config, function(err,data) {
-    debug("Import complete");
-  }).on("written", function(data) {
-    debug("Written ok:" + data.documents + " - failed: " + data.failed + " -  (" + data.total + ")");
-  }).on("writeerror", function(err) {
-    debug("ERROR", err);
-  });
+  // import data from a stdin
+  couchimport.importStream(process.stdin, argv, function (err, data) {
+    debug('Import complete')
+    if (err) {
+      console.err('Error', err)
+    }
+  }).on('written', function (data) {
+    debug('Written ok:' + data.documents + ' - failed: ' + data.failed + ' -  (' + data.total + ')')
+  }).on('writeerror', function (err) {
+    debug('ERROR', err)
+  })
 }
-
-

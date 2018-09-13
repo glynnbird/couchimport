@@ -1,7 +1,4 @@
 
-
-
-module.exports = function(doc) {
-  
-  return doc;
+module.exports = function (doc) {
+  return doc
 }

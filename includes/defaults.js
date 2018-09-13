@@ -1,35 +1,34 @@
-var defaults = {
-  COUCH_URL: "http://localhost:5984",
-  COUCH_DATABASE: "test",
-  COUCH_DELIMITER:  "\t",
-  COUCH_FILETYPE: "text",
-  COUCH_BUFFER_SIZE:  500,
-  COUCH_JSON_PATH: null,
-  COUCH_TRANSFORM: null,
-  COUCH_META: null,
-  COUCH_PARALLELISM: 1,
-  COUCH_PREVIEW: false,
-  COUCH_IGNORE_FIELDS: []
-};
+const defaults = {
+  url: 'http://localhost:5984',
+  database: 'test',
+  delimiter: '\t',
+  type: 'text',
+  buffer: 500,
+  'json-path': null,
+  transform: null,
+  meta: null,
+  parallelism: 1,
+  preview: false,
+  ignorefields: []
+}
 
-var get = function() {
-  return JSON.parse(JSON.stringify(defaults)); 
-};
+const get = function () {
+  return JSON.parse(JSON.stringify(defaults))
+}
 
-var merge = function(myopts) {
-  if(myopts == null) {
-    return get(); 
+const merge = function (myopts) {
+  if (myopts == null) {
+    return get()
   }
-  for(var i in defaults) {
-    if (typeof myopts[i] == "undefined") {
-      myopts[i] = defaults[i];
+  for (var i in defaults) {
+    if (typeof myopts[i] === 'undefined') {
+      myopts[i] = defaults[i]
     }
   }
-  return myopts;
+  return myopts
 }
 
 module.exports = {
   get: get,
   merge: merge
-};
-
+}
