@@ -1,6 +1,6 @@
 module.exports = function(couch_url, couch_database, blocksize) {
   
-  var cloudant = require('cloudant')(couch_url);
+  var cloudant = require('@cloudant/cloudant')(couch_url);
   var db = cloudant.db.use(couch_database);
   var startdocid = null;
 
