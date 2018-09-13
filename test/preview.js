@@ -1,56 +1,51 @@
-var couchimport = require("../app.js");
-var assert = require('assert');
-var should = require('should');
+/* global describe it before */
+var couchimport = require('../app.js')
+var assert = require('assert')
+var opts = { preview: true }
 
-var opts = { COUCH_PREVIEW:true };
-
-            
-describe('Preview mode', function() { 
-
-  it('preview csv', function(done) {
-    couchimport.previewCSVFile("./test/test.csv", opts, function(err,data, delimiter) {
-      assert.equal(err, null);
-      data.should.be.an.Array;
-      delimiter.should.be.a.String;
-      delimiter.should.equal(",");
-      done();
-    });
-  });
-
-  it('preview tsv', function(done) {
-    couchimport.previewCSVFile("./test/guitars.tsv", opts, function(err,data, delimiter) {
-      assert.equal(err, null);
-      data.should.be.an.Array;
-      delimiter.should.be.a.String;
-      delimiter.should.equal("\t");
-      done();
-    });
+describe('Preview mode', function () {
+  it('preview csv', function (done) {
+    couchimport.previewCSVFile('./test/test.csv', opts, function (err, data, delimiter) {
+      assert.strictEqual(err, null)
+      assert.strictEqual(typeof data, 'object')
+      assert.strictEqual(typeof delimiter, 'string')
+      assert.strictEqual(delimiter, ',')
+      done()
+    })
   })
 
-  it('preview tsv with transform', function(done) {
-    opts.COUCH_TRANSFORM = function(doc) {
-      doc.price = parseFloat(doc.price);
-      return doc;
-    };
-    couchimport.previewCSVFile("./test/guitars.tsv", opts, function(err,data, delimiter) {
-      assert.equal(err, null);
-      data.should.be.an.Array;
-      data[0].should.be.an.Object;
-      data[0].price.should.be.a.Number;
-      delimiter.should.be.a.String;
-      delimiter.should.equal("\t");
-      done();
-    });
+  it('preview tsv', function (done) {
+    couchimport.previewCSVFile('./test/guitars.tsv', opts, function (err, data, delimiter) {
+      assert.strictEqual(err, null)
+      assert.strictEqual(typeof data, 'object')
+      assert.strictEqual(typeof delimiter, 'string')
+      assert.strictEqual(delimiter, '\t')
+      done()
+    })
   })
 
-  it('preview nonsense', function(done) {
-    couchimport.previewCSVFile("./test/guitars.tsv", opts, function(err,data, delimiter) {
-      assert.equal(err, null);
-      data.should.be.an.Array;
-      delimiter.should.be.a.String;
-      delimiter.should.equal("\t");
-      done();
-    });
-  });
+  it('preview tsv with transform', function (done) {
+    opts.transform = function (doc) {
+      doc.price = parseFloat(doc.price)
+      return doc
+    }
+    couchimport.previewCSVFile('./test/guitars.tsv', opts, function (err, data, delimiter) {
+      assert.strictEqual(err, null)
+      assert.strictEqual(typeof data, 'object')
+      assert.strictEqual(typeof data[0].price, 'number')
+      assert.strictEqual(typeof delimiter, 'string')
+      assert.strictEqual(delimiter, '\t')
+      done()
+    })
+  })
 
-});
+  it('preview nonsense', function (done) {
+    couchimport.previewCSVFile('./test/guitars.tsv', opts, function (err, data, delimiter) {
+      assert.strictEqual(err, null)
+      assert.strictEqual(typeof data, 'object')
+      assert.strictEqual(typeof delimiter, 'string')
+      assert.strictEqual(delimiter, '\t')
+      done()
+    })
+  })
+})

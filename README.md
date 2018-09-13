@@ -4,52 +4,53 @@
 
 ## Introduction
 
-When populating CouchDB databases, often the source of the data is initially a CSV or TSV file. CouchImport is designed to assist you with importing flat data into CouchDB efficiently.
+When populating CouchDB databases, often the source of the data is initially a CSV or TSV file. *couchimport* is designed to assist you with importing flat data into CouchDB efficiently.
 It can be used either as command-line utilities `couchimport` and `couchexport` or the underlying functions can be used programmatically:
 
-* simply pipe the data file to 'couchimport' on the command line
-* handles tab or comma separated data
-* uses Node.js's streams for memory efficiency
-* plug in a custom function to add your own changes before the data is written
-* writes the data in bulk for speed
-* can also write huge JSON files using a streaming JSON parser
-* allows multiple writes to happen at once using the `--parallelism` option
+* simply pipe the data file to *couchimport* on the command line.
+* handles tab or comma-separated data.
+* uses Node.js's streams for memory efficiency.
+* plug in a custom function to add your own changes before the data is written.
+* writes the data in bulk for speed.
+* can also read huge JSON files using a streaming JSON parser.
+* allows multiple HTTP writes to happen at once using the `--parallelism` option.
 
 ![schematic](https://github.com/glynnbird/couchimport/raw/master/images/couchimport.png "Schematic Diagram")
 
 ## Installation
 
 Requirements
-* node.js
-* npm
 
-```
+- node.js
+= npm
+
+```sh
   sudo npm install -g couchimport
 ```
 
 ## Configuration
 
-CouchImport's configuration parameters can be stored in environment variables or supplied as command line arguments.
+*couchimport*'s configuration parameters can be stored in environment variables or supplied as command line arguments.
 
-### The location of CouchDB - default "http://localhost:5984"
+### The location of CouchDB 
 
-Simply set the "COUCH_URL" environment variable e.g. for a hosted Cloudant database
+Simply set the `COUCH_URL` environment variable e.g. for a hosted Cloudant database
 
-```
+```sh
   export COUCH_URL="https://myusername:myPassw0rd@myhost.cloudant.com"
 
 ```
 or a local CouchDB installation:
 
-```
+```sh
   export COUCH_URL="http://localhost:5984"
 ```
 
 ### The name of the database - default "test"
 
-Define the name of the CouchDB database to write to by setting the "COUCH_DATABASE" environment variable e.g.
+Define the name of the CouchDB database to write to by setting the `COUCH_DATABASE` environment variable e.g.
 
-```
+```sh
   export COUCH_DATABASE="mydatabase"
 ```
 
@@ -57,22 +58,23 @@ Define the name of the CouchDB database to write to by setting the "COUCH_DATABA
 
 Define the path of a file containing a transformation function e.g.
 
-```
+```sh
   export COUCH_TRANSFORM="/home/myuser/transform.js"
 ```
 
 The file should:
-* be a javascript file
+
+* be a JavaScript file
 * export one function that takes a single doc and returns a single object or
   an array of objects if you need to split a row into multiple docs.
 
-(see examples directory). N.B it's best to use full paths for the transform function.
+(see examples directory). 
 
 ### Delimiter - default "\t"
 
 The define the column delimiter in the input data e.g.
 
-```
+```sh
   export COUCH_DELIMITER=","
 ```
 
@@ -80,13 +82,13 @@ The define the column delimiter in the input data e.g.
 
 Simply pipe the text data into "couchimport":
 
-```
+```sh
   cat ~/test.tsv | couchimport
 ```
 
 This example downloads public crime data, unzips and imports it:
 
-```
+```sh
   curl 'http://data.octo.dc.gov/feeds/crime_incidents/archive/crime_incidents_2013_CSV.zip' > crime.zip
   unzip crime.zip
   export COUCH_DATABASE="crime_2013"
@@ -95,24 +97,28 @@ This example downloads public crime data, unzips and imports it:
   cat crime_incidents_2013_CSV.csv | couchimport
 ```
 
-In the above example we use "(ccurl)[https://github.com/glynnbird/ccurl]" a command-line utility that uses the same environment variables as "couchimport".
+In the above example we use (ccurl)[https://github.com/glynnbird/ccurl], a command-line utility that uses the same environment variables as *couchimport*.
 
 ## Output
 
 The following output is visible on the console when "couchimport" runs:
 
 ```
-******************
- COUCHIMPORT - configuration
-   {"COUCH_URL":"https://****:****@myhost.cloudant.com","COUCH_DATABASE":"aaa","COUCH_TRANSFORM":null,"COUCH_DELIMITER":","}
-******************
-Written 500  ( 500 )
-Written 500  ( 1000 )
-Written 500  ( 1500 )
-Written 500  ( 2000 )
-.
-.
-
+couchimport
+-----------
+ url         : "https://****:****@myhost.cloudant.com"
+ database    : "test"
+ delimiter   : "\t"
+ buffer      : 500
+ parallelism : 1
+ type        : "text"
+-----------
+  couchimport Written ok:500 - failed: 0 -  (500) +0ms
+  couchimport { documents: 500, failed: 0, total: 500, totalfailed: 0 } +0ms
+  couchimport Written ok:499 - failed: 0 -  (999) +368ms
+  couchimport { documents: 499, failed: 0, total: 999, totalfailed: 0 } +368ms
+  couchimport writecomplete { total: 999, totalfailed: 0 } +0ms
+  couchimport Import complete +81ms
 ```
 
 The configuration, whether default or overriden by environment variables or command line arguments, is shown.  This is followed by a line of output for each block of 500 documents written, plus a cumulative total.
@@ -121,7 +127,7 @@ The configuration, whether default or overriden by environment variables or comm
 
 If you want to see a preview of the JSON that would be created from your csv/tsv files then add `--preview true` to your command-line:
 
-```
+```sh
     > cat text.txt | couchimport --preview true
     Detected a TAB column delimiter
     { product_id: '1',
@@ -137,13 +143,13 @@ As well as showing a JSON preview, preview mode also attempts to detect the colu
 
 If your source document is a GeoJSON text file, `couchimport` can be used. Let's say your JSON looks like this:
 
-```
+```js
 { "features": [ { "a":1}, {"a":2}] }
 ```
 
-and we need to import each feature object into CouchDB as separate documents, then this can be imported using the `type="json"` argument and specifying the JSON path using the `json-path` argument:
+and we need to import each feature object into CouchDB as separate documents, then this can be imported using the `type="json"` argument and specifying the JSON path using the `jsonpath` argument:
 
-```
+```sh
   cat myfile.json | couchimport --database mydb --type json --jsonpath "features.*"
 ``` 
 
@@ -151,7 +157,7 @@ and we need to import each feature object into CouchDB as separate documents, th
 
 If your source document is a [JSON Lines](http://jsonlines.org/) text file, `couchimport` can be used. Let's say your JSON Lines looks like this:
 
-```
+```js
 {"a":1}
 {"a":2}
 {"a":3}
@@ -165,7 +171,7 @@ If your source document is a [JSON Lines](http://jsonlines.org/) text file, `cou
 
 and we need to import each line as a JSON object into CouchDB as separate documents, then this can be imported using the `type="jsonl"` argument:
 
-```
+```sh
   cat myfile.json | couchimport --database mydb --type jsonl
 ```
 
@@ -173,7 +179,7 @@ and we need to import each line as a JSON object into CouchDB as separate docume
 
 If your source data is a lot of JSON objects meshed or appended together, `couchimport` can be used. Let's say your file:
 
-```
+```js
 {"a":1}{"a":2}  {"a":3}{"a":4}
 {"a":5}          {"a":6}
 {"a":7}{"a":8}
@@ -206,21 +212,23 @@ and we need to import each JSON objet to CouchDB as separate documents, then thi
 
 You can also configure `couchimport` and `couchexport` using command-line parameters:
 
-* --version - simply prints the version and exits
-* --url - the url of the CouchDB instance (required, or to be supplied in the environment)
-* --database (or --db) - the database to deal with (required, or to be supplied in the environment)
-* --delimiter - the delimiter to use (default '\t', not required)
-* --transform - the path of a transformation function (not required)
-* --meta - a json object which will be passed to the transform function (not required)
-* --buffer - the number of records written to CouchDB per bulk write (defaults to 500, not required)
-* --type - the type of file being imported, either "text", "json" or "jsonl" (defaults to "text", not required)
-* --json-path - the path into the incoming JSON document (only required for type=json imports)
-* --preview - if 'true', runs in preview mode
-* --ignorefields - a comma-separated list of fields to ignore input or output
+* `--help` - show help
+* `--version` - simply prints the version and exits
+* `--url`/`-u` - the url of the CouchDB instance (required, or to be supplied in the environment)
+* `--database`/`--db`/`-d` - the database to deal with (required, or to be supplied in the environment)
+* `--delimiter` - the delimiter to use (default '\t', not required)
+* `--transform` - the path of a transformation function (not required)
+* `--meta`/`-m` - a json object which will be passed to the transform function (not required)
+* `--buffer`/`-b` - the number of records written to CouchDB per bulk write (defaults to 500, not required)
+* `--type`/`-t` - the type of file being imported, either "text", "json" or "jsonl" (defaults to "text", not required)
+* `--jsonpath`/`-j` - the path into the incoming JSON document (only required for type=json imports)
+* `--preview`/`-p` - if 'true', runs in preview mode (default false)
+* `--ignorefields`/`-i` - a comma-separated list of fields to ignore input or output (default none)
+* `--parallelism` - the number of HTTP request to have in flight at any one time (default 1)
 
 e.g.
 
-```
+```sh
     cat test.csv | couchimport --database  bob --delimiter ","
 ```
 
@@ -228,7 +236,7 @@ e.g.
 
 If you have structured data in a CouchDB or Cloudant that has fixed keys and values e.g.
 
-```
+```js
 {
     "_id": "badger",
     "_rev": "5-a9283409e3253a0f3e07713f42cd4d40",
@@ -246,15 +254,15 @@ If you have structured data in a CouchDB or Cloudant that has fixed keys and val
 
 then it can be exported to a CSV like so (note how we set the delimiter):
 
-```
+```sh
     couchexport --url http://localhost:5984 --database animaldb --delimiter "," > test.csv
 ```
+
 or to a TSV like so (we don't need to specify the delimiter since tab `\t` is the default):
 
-```
+```sh
     couchexport --url http://localhost:5984 --database animaldb > test.tsv
 ```
-
 
 N.B.
 
@@ -264,13 +272,12 @@ N.B.
 * COUCH_DELIMITER or --delimiter can be used to provide a custom column delimiter (not required when tab-delimited)
 * if your document values contain carriage returns or the column delimiter, then this may not be the tool for you
 
-
 ## Using programmatically
 
 In your project, add `couchimport` into the dependencies of your package.json or run `npm install couchimport`. In your code, require
 the library with
 
-```
+```js
     var couchimport = require('couchimport');
 ```
 
@@ -278,13 +285,13 @@ and your options are set in an object whose keys are the same as the COUCH_* env
 
 e.g.
 
-```
-   var opts = { COUCH_DELIMITER: ",", COUCH_URL: "http://localhost:5984", COUCH_DATABASE: "mydb" };
+```js
+   var opts = { delimiter: ",", url: "http://localhost:5984", database: "mydb" };
 ```
 
 To import data from a readable stream (rs):
 
-```
+```js
     var rs = process.stdin;
     couchimport.importStream(rs, opts, function(err,data) {
        console.log("done");
@@ -293,7 +300,7 @@ To import data from a readable stream (rs):
 
 To import data from a named file:
 
-```
+```js
     couchimport.importFile("input.txt", opts, function(err,data) {
        console.log("done",err,data);
     });
@@ -301,17 +308,16 @@ To import data from a named file:
 
 To export data to a writable stream (ws):
 
-```
+```js
    var ws = process.stdout;
    couchimport.exportStream(ws, opts, function(err, data) {
      console.log("done",err,data);
    });
 ```
 
-
 To export data to a named file:
 
-```
+```js
    couchimport.exportFile("output.txt", opts, function(err, data) {
       console.log("done",err,data);
    });
@@ -319,7 +325,7 @@ To export data to a named file:
 
 To preview a file:
 
-```
+```js
     couchimport.previewCSVFile('./hp.csv', opts, function(err, data, delimiter) {
       console.log("done", err, data, delimiter);
     });
@@ -327,7 +333,7 @@ To preview a file:
 
 To preview a CSV/TSV on a URL:
 
-```
+```js
     couchimport.previewURL('https://myhosting.com/hp.csv', opts, function(err, data) {
       console.log("done", err, data, delimiter);  
     });
@@ -344,13 +350,13 @@ Both `importStream` and `importFile` return an EventEmitter which emits
 
 e.g.
 
-```
+```js
 couchimport.importFile("input.txt", opts, function(err,data) {
   console.log("done",err,data);
 }).on("written", function(data) {
   // data = { documents: 500, failed:6, total: 63000, totalfailed: 42}
 });
-````
+```
 
 The emitted data is an object containing:
 
@@ -361,10 +367,8 @@ The emitted data is an object containing:
 
 ## Parallelism
 
-Using the `COUCH_PARALLELISM` environment variable or the `--parallelism` command-line option, couchimport can
-be configured to write data in multiple parallel operations. If you have the networkbandwidth, this can significantly
-speed up large data imports e.g.
+Using the `COUCH_PARALLELISM` environment variable or the `--parallelism` command-line option, couchimport can be configured to write data in multiple parallel operations. If you have the networkbandwidth, this can significantly speed up large data imports e.g.
 
-```
+```sh
   cat bigdata.csv | couchimport --database mydb --parallelism 10 --delimiter ","
 ```

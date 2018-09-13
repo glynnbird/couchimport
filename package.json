@@ -14,18 +14,17 @@
   "author": "Glynn Bird <glynn.bird@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "@cloudant/cloudant": "^2.3.0",
     "JSONStream": "^1.3.4",
     "async": "^2.6.1",
-    "@cloudant/cloudant": "^2.3.0",
     "csv-parse": "^3.0.0",
     "debug": "4.0.1",
-    "minimist": "1.2.0",
-    "underscore": "1.9.1"
+    "yargs": "^12.0.2"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
-    "should": "^13.2.3",
-    "nock": "9.6.1"
+    "nock": "9.6.1",
+    "standard": "^12.0.1"
   },
   "main": "./app.js",
   "bin": {
@@ -33,6 +32,12 @@
     "couchexport": "bin/couchexport.bin.js"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "standard; mocha",
+    "standard": "standard --fix"
+  },
+  "standard": {
+    "env": [
+      "mocha"
+    ]
   }
 }
