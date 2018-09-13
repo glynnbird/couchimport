@@ -70,8 +70,8 @@ describe('Environment variables', function () {
   })
 
   it('respects the jsonpath variable', function (done) {
-    assert.strictEqual(typeof config['json-path'], 'string')
-    assert.strictEqual(config['json-path'], MY_JSON_PATH)
+    assert.strictEqual(typeof config.jsonpath, 'string')
+    assert.strictEqual(config.jsonpath, MY_JSON_PATH)
     done()
   })
 

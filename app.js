@@ -30,13 +30,13 @@ const importStream = function (rs, opts, callback) {
       .pipe(writer) // write the data
   } else if (opts.type === 'json') {
     // if this is a JSON stream
-    if (!opts['json-path']) {
+    if (!opts['jsonpath']) {
       const msg = 'ERROR: you must specify a JSON path using --jsonpath or COUCH_JSON_PATH'
       debugimport(msg)
       return callback(msg, null)
     }
     // pipe the file to a streaming JSON parser
-    rs.pipe(JSONStream.parse(opts['json-path']))
+    rs.pipe(JSONStream.parse(opts.jsonpath))
       .pipe(transformer) // process each object
       .pipe(writer) // write the data
   } else {

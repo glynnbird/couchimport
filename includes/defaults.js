@@ -4,7 +4,7 @@ const defaults = {
   delimiter: '\t',
   type: 'text',
   buffer: 500,
-  'json-path': null,
+  jsonpath: null,
   transform: null,
   meta: null,
   parallelism: 1,

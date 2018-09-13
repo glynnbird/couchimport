@@ -5,7 +5,7 @@ const couchimport = require('../app.js')
 const argv = require('../includes/args.js').parse()
 
 // output selected options
-const options = ['url', 'database', 'delimiter', 'transform', 'meta', 'buffer', 'parallelism', 'type', 'json-path', 'preview', 'ignorefields']
+const options = ['url', 'database', 'delimiter', 'transform', 'meta', 'buffer', 'parallelism', 'type', 'jsonpath', 'preview', 'ignorefields']
 console.log('couchimport')
 console.log('-----------')
 for (let i in options) {

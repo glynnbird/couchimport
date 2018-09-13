@@ -44,7 +44,7 @@ const parse = function () {
       choices: ['text', 'json', 'jsonl'],
       default: process.env.COUCH_FILETYPE ? process.env.COUCH_FILETYPE : 'text'
     })
-    .option('json-path', {
+    .option('jsonpath', {
       alias: 'j',
       describe: 'the path into the incoming JSON document (type=json only)',
       default: process.env.COUCH_JSON_PATH ? process.env.COUCH_JSON_PATH : null
