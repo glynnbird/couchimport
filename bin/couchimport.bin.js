@@ -48,7 +48,7 @@ if (argv.preview) {
   couchimport.importStream(process.stdin, argv, function (err, data) {
     debug('Import complete')
     if (err) {
-      console.err('Error', err)
+      console.error('Error', err)
     }
   }).on('written', function (data) {
     debug('Written ok:' + data.documents + ' - failed: ' + data.failed + ' -  (' + data.total + ')')
