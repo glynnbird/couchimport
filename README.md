@@ -264,6 +264,12 @@ or to a TSV like so (we don't need to specify the delimiter since tab `\t` is th
     couchexport --url http://localhost:5984 --database animaldb > test.tsv
 ```
 
+or to a stream of JSON:
+
+```sh
+    couchexport --url http://localhost:5984 --database animaldb --type jsonl
+```
+
 N.B.
 
 * design documents are ignored
@@ -271,6 +277,7 @@ N.B.
 * if subsequent documents have different keys, then unexpected things may happen
 * COUCH_DELIMITER or --delimiter can be used to provide a custom column delimiter (not required when tab-delimited)
 * if your document values contain carriage returns or the column delimiter, then this may not be the tool for you
+* you may supply a JavaScript `--transform` function to modify the data on its way out
 
 ## Using programmatically
 

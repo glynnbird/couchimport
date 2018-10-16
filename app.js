@@ -1,5 +1,4 @@
 const fs = require('fs')
-const async = require('async')
 const debugimport = require('debug')('couchimport')
 const debugexport = require('debug')('couchexport')
 const preview = require('./includes/preview.js')
@@ -80,24 +79,6 @@ const strip = function (str) {
 // opts - an options object, or null for defaults
 // callback - called when complete
 const exportStream = function (ws, opts, callback) {
-  let escape = null
-
-  // sort the paramters
-  if (typeof callback === 'undefined' && typeof opts === 'function') {
-    callback = opts
-    opts = {}
-  }
-
-  opts = defaults.merge(opts)
-
-  let total = 0
-
-  let headings = []
-
-  let lastsize = 0
-
-  const reader = require('./includes/reader.js')(opts.url, opts.database, opts.buffer)
-
   // export a row as a CSV
   const exportAsCSV = function (row) {
     // ignore design docs
@@ -110,7 +91,7 @@ const exportStream = function (ws, opts, callback) {
       headings = Object.keys(row)
       if (opts.ignorefields) {
         let h = []
-        headings.forEach(function(f) {
+        headings.forEach((f) => {
           if (!opts.ignorefields.includes(f)) {
             h.push(f)
           }
@@ -137,35 +118,58 @@ const exportStream = function (ws, opts, callback) {
     ws.write(cols.join(opts.delimiter) + '\n')
   }
 
-  async.doUntil(function (callback) {
-    reader(function (err, data) {
-      if (err) {
-        return callback(err)
-      }
-      lastsize = data.length
-      total += lastsize
-      for (var i in data) {
-        exportAsCSV(data[i])
-      }
-      debugexport('Output', data.length, '[' + total + ']')
-      callback(null)
-    })
-  },
-  function () {
-    return (lastsize === 0 || escape)
-  },
-  function (err) {
-    debugexport('Output complete')
-    if (err) {
-      callback(escape, null)
-    } else {
-      callback(null, null)
-    }
-  })
+  // sort the paramters
+  if (typeof callback === 'undefined' && typeof opts === 'function') {
+    callback = opts
+    opts = {}
+  }
 
-  ws.on('error', function (err) {
-    escape = err
-  })
+  opts = defaults.merge(opts)
+  let total = 0
+  let headings = []
+  let lastsize = 0
+  const Nano = require('nano')
+  const nano = Nano(opts.url)
+  const ChangesReader = require('changesreader')
+  const changesReader = new ChangesReader(opts.database, nano.request)
+
+  const changesOpts = {
+    batchSize: opts.buffer,
+    includeDocs: true,
+    since: '0'
+  }
+  changesReader.get(changesOpts)
+    .on('batch', (batch) => {
+      lastsize = batch.length
+      total += lastsize
+      for (var i in batch) {
+        if (!batch[i].doc._deleted) {
+          // apply transform
+          if (typeof opts.transform === 'function') {
+            batch[i].doc = opts.transform.apply(null, [batch[i].doc, opts.meta])
+          }
+          switch (opts.type) {
+            case 'json':
+            case 'jsonl':
+              ws.write(JSON.stringify(batch[i].doc) + '\n')
+              break
+            case 'text':
+              exportAsCSV(batch[i].doc)
+              break
+          }
+        }
+      }
+      debugexport('Output', batch.length, '[' + total + ']')
+    })
+    .on('end', () => {
+      ws.end(null, null, () => {
+        callback(null, null)
+      })
+    })
+    .on('error', (e) => {
+      console.log('ERROR', e)
+      callback(e, null)
+    })
 }
 
 // export to a named file
