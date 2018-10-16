@@ -136,7 +136,8 @@ const exportStream = function (ws, opts, callback) {
   const changesOpts = {
     batchSize: opts.buffer,
     includeDocs: true,
-    since: '0'
+    since: '0',
+    timeout: 0
   }
   changesReader.get(changesOpts)
     .on('batch', (batch) => {
@@ -162,9 +163,7 @@ const exportStream = function (ws, opts, callback) {
       debugexport('Output', batch.length, '[' + total + ']')
     })
     .on('end', () => {
-      ws.end(null, null, () => {
-        callback(null, null)
-      })
+      callback(null, null)
     })
     .on('error', (e) => {
       console.log('ERROR', e)
