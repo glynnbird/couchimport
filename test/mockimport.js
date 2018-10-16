@@ -6,8 +6,6 @@ const assert = require('assert')
 
 var opts = { delimiter: ',', url: URL, database: 'mydb', buffer: 100 }
 
-
-
 describe('Input CSV file', function () {
   before(function () {
   })

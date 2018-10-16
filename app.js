@@ -143,18 +143,20 @@ const exportStream = function (ws, opts, callback) {
       lastsize = batch.length
       total += lastsize
       for (var i in batch) {
-        // apply transform
-        if (typeof opts.transform === 'function') {
-          batch[i].doc = opts.transform.apply(null, [batch[i].doc, opts.meta])
-        }
-        switch (opts.type) {
-          case 'json':
-          case 'jsonl':
-            ws.write(JSON.stringify(batch[i].doc) + '\n')
-            break
-          case 'text':
-            exportAsCSV(batch[i].doc)
-            break
+        if (!batch[i].doc._deleted) {
+          // apply transform
+          if (typeof opts.transform === 'function') {
+            batch[i].doc = opts.transform.apply(null, [batch[i].doc, opts.meta])
+          }
+          switch (opts.type) {
+            case 'json':
+            case 'jsonl':
+              ws.write(JSON.stringify(batch[i].doc) + '\n')
+              break
+            case 'text':
+              exportAsCSV(batch[i].doc)
+              break
+          }
         }
       }
       debugexport('Output', batch.length, '[' + total + ']')
