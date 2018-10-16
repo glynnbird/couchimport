@@ -9,13 +9,14 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
   let written = 0
   let totalfailed = 0
 
-  const cloudant = require('@cloudant/cloudant')(couchURL)
+  const cloudant = require('nano')(couchURL)
   const db = cloudant.db.use(couchDatabase)
 
   // process the writes in bulk as a queue
   const q = async.queue(function (payload, cb) {
     db.bulk(payload, function (err, data) {
       if (err) {
+        console.log('ERR', err)
         writer.emit('writeerror', err)
       } else {
         let ok = 0
