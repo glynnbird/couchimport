@@ -28,7 +28,7 @@ const importStream = function (rs, opts, callback) {
       .pipe(writer) // write the data
   } else if (opts.type === 'json') {
     // if this is a JSON stream
-    if (!opts['jsonpath']) {
+    if (!opts.jsonpath) {
       const msg = 'ERROR: you must specify a JSON path using --jsonpath or COUCH_JSON_PATH'
       debugimport(msg)
       return callback(msg, null)
@@ -50,7 +50,6 @@ const importStream = function (rs, opts, callback) {
   }
 
   writer.on('writecomplete', function (data) {
-    debugimport('writecomplete', data)
     callback(null, data)
   })
 
@@ -90,7 +89,7 @@ const exportStream = function (ws, opts, callback) {
     if (headings.length === 0) {
       headings = Object.keys(row)
       if (opts.ignorefields) {
-        let h = []
+        const h = []
         headings.forEach((f) => {
           if (!opts.ignorefields.includes(f)) {
             h.push(f)
@@ -101,7 +100,7 @@ const exportStream = function (ws, opts, callback) {
     }
 
     // output columns
-    let cols = []
+    const cols = []
     for (var i in headings) {
       const v = row[headings[i]]
       const t = typeof v

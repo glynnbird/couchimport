@@ -44,7 +44,7 @@ const first10kURL = function (u, callback) {
     }
   }
 
-  const parsed = URL.parse(u)
+  const parsed = new URL.URL(u)
   let agent
   if (parsed.protocol === 'http:') {
     agent = require('http')

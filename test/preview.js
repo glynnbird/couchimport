@@ -1,4 +1,3 @@
-/* global describe it before */
 var couchimport = require('../app.js')
 var assert = require('assert')
 var opts = { preview: true }

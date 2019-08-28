@@ -4,7 +4,7 @@ const debug = require('debug')('couchimport')
 module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ignoreFields) {
   const stream = require('stream')
 
-  let buffer = [ ]
+  let buffer = []
 
   let written = 0
   let totalfailed = 0

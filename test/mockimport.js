@@ -11,6 +11,7 @@ describe('Input CSV file', function () {
   })
 
   it('import a CSV file', function (done) {
+    this.timeout(5000)
     var path = require('path')
     var p = path.join(__dirname, 'test.csv')
     nock(URL)
