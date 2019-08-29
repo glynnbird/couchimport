@@ -20,7 +20,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
 
     const opts = { url: couchURL }
     if (IAM_API_KEY && iamAccessToken) {
-      opts.defaultHeaders = { 'Authorization': 'Bearer ' + iamAccessToken }
+      opts.defaultHeaders = { Authorization: 'Bearer ' + iamAccessToken }
     }
     const cloudant = require('nano')(opts)
     const db = cloudant.db.use(couchDatabase)
