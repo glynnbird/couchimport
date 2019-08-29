@@ -8,7 +8,7 @@ const argv = require('../includes/args.js').parse()
 const options = ['url', 'database', 'delimiter', 'transform', 'meta', 'buffer', 'parallelism', 'type', 'jsonpath', 'preview', 'ignorefields']
 console.log('couchimport')
 console.log('-----------')
-for (let i in options) {
+for (const i in options) {
   if (argv[options[i]]) {
     const k = options[i].padEnd(11, ' ')
     let v

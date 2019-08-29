@@ -3,6 +3,7 @@ const debugimport = require('debug')('couchimport')
 const debugexport = require('debug')('couchexport')
 const preview = require('./includes/preview.js')
 const defaults = require('./includes/defaults.js')
+const iam = require('./includes/iam.js')
 
 // import a file stream into CouchDB
 // rs - readable stream
@@ -28,7 +29,7 @@ const importStream = function (rs, opts, callback) {
       .pipe(writer) // write the data
   } else if (opts.type === 'json') {
     // if this is a JSON stream
-    if (!opts['jsonpath']) {
+    if (!opts.jsonpath) {
       const msg = 'ERROR: you must specify a JSON path using --jsonpath or COUCH_JSON_PATH'
       debugimport(msg)
       return callback(msg, null)
@@ -50,7 +51,6 @@ const importStream = function (rs, opts, callback) {
   }
 
   writer.on('writecomplete', function (data) {
-    debugimport('writecomplete', data)
     callback(null, data)
   })
 
@@ -90,7 +90,7 @@ const exportStream = function (ws, opts, callback) {
     if (headings.length === 0) {
       headings = Object.keys(row)
       if (opts.ignorefields) {
-        let h = []
+        const h = []
         headings.forEach((f) => {
           if (!opts.ignorefields.includes(f)) {
             h.push(f)
@@ -101,7 +101,7 @@ const exportStream = function (ws, opts, callback) {
     }
 
     // output columns
-    let cols = []
+    const cols = []
     for (var i in headings) {
       const v = row[headings[i]]
       const t = typeof v
@@ -128,47 +128,53 @@ const exportStream = function (ws, opts, callback) {
   let total = 0
   let headings = []
   let lastsize = 0
-  const Nano = require('nano')
-  const nano = Nano(opts.url)
-  const ChangesReader = require('changesreader')
-  const changesReader = new ChangesReader(opts.database, nano.request)
+  iam.getToken(process.env.IAM_API_KEY).then((t) => {
+    const nanoopts = { url: opts.url }
+    if (t) {
+      nanoopts.defaultHeaders = { Authorization: 'Bearer ' + t }
+    }
+    const Nano = require('nano')
+    const nano = Nano(nanoopts)
+    const ChangesReader = require('changesreader')
+    const changesReader = new ChangesReader(opts.database, nano.request)
 
-  const changesOpts = {
-    batchSize: opts.buffer,
-    includeDocs: true,
-    since: '0',
-    timeout: 0
-  }
-  changesReader.get(changesOpts)
-    .on('batch', (batch) => {
-      lastsize = batch.length
-      total += lastsize
-      for (var i in batch) {
-        if (!batch[i].doc._deleted) {
-          // apply transform
-          if (typeof opts.transform === 'function') {
-            batch[i].doc = opts.transform.apply(null, [batch[i].doc, opts.meta])
-          }
-          switch (opts.type) {
-            case 'json':
-            case 'jsonl':
-              ws.write(JSON.stringify(batch[i].doc) + '\n')
-              break
-            case 'text':
-              exportAsCSV(batch[i].doc)
-              break
+    const changesOpts = {
+      batchSize: opts.buffer,
+      includeDocs: true,
+      since: '0',
+      timeout: 0
+    }
+    changesReader.get(changesOpts)
+      .on('batch', (batch) => {
+        lastsize = batch.length
+        total += lastsize
+        for (var i in batch) {
+          if (!batch[i].doc._deleted) {
+            // apply transform
+            if (typeof opts.transform === 'function') {
+              batch[i].doc = opts.transform.apply(null, [batch[i].doc, opts.meta])
+            }
+            switch (opts.type) {
+              case 'json':
+              case 'jsonl':
+                ws.write(JSON.stringify(batch[i].doc) + '\n')
+                break
+              case 'text':
+                exportAsCSV(batch[i].doc)
+                break
+            }
           }
         }
-      }
-      debugexport('Output', batch.length, '[' + total + ']')
-    })
-    .on('end', () => {
-      callback(null, null)
-    })
-    .on('error', (e) => {
-      console.log('ERROR', e)
-      callback(e, null)
-    })
+        debugexport('Output', batch.length, '[' + total + ']')
+      })
+      .on('end', () => {
+        callback(null, null)
+      })
+      .on('error', (e) => {
+        console.log('ERROR', e)
+        callback(e, null)
+      })
+  })
 }
 
 // export to a named file
