@@ -27,6 +27,17 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
 
     // process the writes in bulk as a queue
     const q = async.queue(function (payload, cb) {
+      // detected whether we need to supply new_edits = false
+      let allHaveRev = true
+      for (var i in payload.docs) {
+        if (!payload.docs[i]._rev) {
+          allHaveRev = false
+          break
+        }
+      }
+      if (allHaveRev) {
+        payload.new_edits = false
+      }
       db.bulk(payload, function (err, data) {
         if (err) {
           console.log('ERR', err)
@@ -34,15 +45,19 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
         } else {
           let ok = 0
           let failed = 0
-          for (var i in data) {
-            const d = data[i]
-            const isok = !!((d.id && d.rev))
-            if (isok) {
-              ok++
-            } else {
-              failed++
-              writer.emit('writefail', d)
-              debug(d)
+          if (allHaveRev) {
+            ok += payload.docs.length
+          } else {
+            for (var i in data) {
+              const d = data[i]
+              const isok = !!((d.id && d.rev))
+              if (isok) {
+                ok++
+              } else {
+                failed++
+                writer.emit('writefail', d)
+                debug(d)
+              }
             }
           }
           written += ok
