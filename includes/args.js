@@ -60,6 +60,12 @@ const parse = function () {
       describe: 'a comma-separated list of fields to ignore',
       default: process.env.COUCH_IGNORE_FIELDS ? process.env.COUCH_IGNORE_FIELDS : null
     })
+    .option('overwrite', {
+      alias: 'o',
+      boolean: true,
+      describe: 'whether to overwrite existing revisions with supplied data',
+      default: process.env.COUCH_OVERWRITE ? process.env.COUCH_OVERWRITE : false
+    })
     .argv
 
   // load the transformation JavaScript

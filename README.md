@@ -202,6 +202,12 @@ and we need to import each JSON objet to CouchDB as separate documents, then thi
   cat myfile.json.blob | couchimport --database mydb --type jsonl
 ```
 
+## Overwriting existing data
+
+If you are importing data into a CouchDB database that already contains data, and you are supplying a document `_id` in your source data, then and values of `_id` will fail to write because CouchDB will report a `409 Document Conflict`. If you want your supplied data to supercede existing data then supply `--overwrite true`/`-o true` as a command-line option. This will instruct `couchimport` to fetch the existing documents' current `_rev` values and inject them into the imported data stream. 
+
+> Note: Using _overwrite_ mode is slower because an additional API call is required per batch of data imported. USe caution when importing data into a data set that is being changed by another actor at the same time.
+
 ## Environment variables
 
 * COUCH_URL - the url of the CouchDB instance (required, or to be supplied on the command line)
@@ -214,6 +220,7 @@ and we need to import each JSON objet to CouchDB as separate documents, then thi
 * COUCH_JSON_PATH - the path into the incoming JSON document (only required for COUCH_FILETYPE=json imports)
 * COUCH_PREVIEW - run in preview mode
 * COUCH_IGNORE_FIELDS - a comma-separated list of field names to ignore on import or export e.g. price,url,image
+* COUCH_OVERWRITE - overwrite existing document revisions with supplied data
 
 ## Command-line parameters
 
@@ -232,6 +239,7 @@ You can also configure `couchimport` and `couchexport` using command-line parame
 * `--preview`/`-p` - if 'true', runs in preview mode (default false)
 * `--ignorefields`/`-i` - a comma-separated list of fields to ignore input or output (default none)
 * `--parallelism` - the number of HTTP request to have in flight at any one time (default 1)
+* `--overwrite`/`-o` - overwrite existing document revisions with supplied data (default: false)
 
 e.g.
 

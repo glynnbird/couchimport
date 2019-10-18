@@ -6,7 +6,7 @@ const iam = require('./iam.js')
 const IAM_API_KEY = process.env.IAM_API_KEY ? process.env.IAM_API_KEY : null
 let iamAccessToken = null
 
-module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ignoreFields) {
+module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ignoreFields, overwrite) {
   const stream = require('stream')
 
   let buffer = []
@@ -26,7 +26,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
     const db = cloudant.db.use(couchDatabase)
 
     // process the writes in bulk as a queue
-    const q = async.queue(function (payload, cb) {
+    const q = async.queue(async (payload) => {
       // detected whether we need to supply new_edits = false
       let allHaveRev = true
       for (var i in payload.docs) {
@@ -38,35 +38,67 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
       if (allHaveRev) {
         payload.new_edits = false
       }
-      db.bulk(payload, function (err, data) {
-        if (err) {
-          console.log('ERR', err)
-          writer.emit('writeerror', err)
-        } else {
-          let ok = 0
-          let failed = 0
-          if (allHaveRev) {
-            ok += payload.docs.length
-          } else {
-            for (var i in data) {
-              const d = data[i]
-              const isok = !!((d.id && d.rev))
-              if (isok) {
-                ok++
-              } else {
-                failed++
-                writer.emit('writefail', d)
-                debug(d)
-              }
-            }
+
+      // check if we need to look for previous revisions
+      if (overwrite) {
+        // get list of document ids to fetch
+        const keys = []
+        for (i in payload.docs) {
+          if (payload.docs[i]._id) {
+            keys.push(payload.docs[i]._id)
           }
-          written += ok
-          totalfailed += failed
-          writer.emit('written', { documents: ok, failed: failed, total: written, totalfailed: totalfailed })
-          debug({ documents: ok, failed: failed, total: written, totalfailed: totalfailed })
         }
-        cb()
-      })
+        const existingData = await db.fetchRevs({ keys: keys })
+
+        // make lookup table between id-->rev
+        const lookup = {}
+        for (i in existingData.rows) {
+          if (existingData.rows[i].id) {
+            lookup[existingData.rows[i].id] = existingData.rows[i].value.rev
+          }
+        }
+
+        // use lookup table to back-fill _rev into user-supplied data
+        for (i in payload.docs) {
+          if (payload.docs[i]._id && lookup[payload.docs[i]._id]) {
+            payload.docs[i]._rev = lookup[payload.docs[i]._id]
+          }
+        }
+
+        // disable new_edits=false in overwrite mode - no conflicts please
+        delete payload.new_edits
+      }
+
+      // write data
+      let data = null
+      try {
+        data = await db.bulk(payload)
+      } catch (e) {
+        console.log('ERR', e)
+        writer.emit('writeerror', e)
+      }
+
+      let ok = 0
+      let failed = 0
+      if (allHaveRev) {
+        ok += payload.docs.length
+      } else {
+        for (i in data) {
+          const d = data[i]
+          const isok = !!((d.id && d.rev))
+          if (isok) {
+            ok++
+          } else {
+            failed++
+            writer.emit('writefail', d)
+            debug(d)
+          }
+        }
+      }
+      written += ok
+      totalfailed += failed
+      writer.emit('written', { documents: ok, failed: failed, total: written, totalfailed: totalfailed })
+      debug({ documents: ok, failed: failed, total: written, totalfailed: totalfailed })
     }, parallelism)
 
     // write the contents of the buffer to CouchDB in blocks of 500
