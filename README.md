@@ -164,7 +164,7 @@ and we need to import each feature object into CouchDB as separate documents, th
 
 If your source document is a [JSON Lines](http://jsonlines.org/) text file, `couchimport` can be used. Let's say your JSON Lines looks like this:
 
-```
+```js
 {"a":1}
 {"a":2}
 {"a":3}
