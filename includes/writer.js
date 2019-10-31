@@ -48,12 +48,11 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
             keys.push(payload.docs[i]._id)
           }
         }
-        const existingData = await db.fetchRevs({ keys: keys })
-
+        const existingData = await db.fetch({ keys: keys })
         // make lookup table between id-->rev
         const lookup = {}
         for (i in existingData.rows) {
-          if (existingData.rows[i].id) {
+          if (existingData.rows[i].id && !existingData.rows[i].value.deleted) {
             lookup[existingData.rows[i].id] = existingData.rows[i].value.rev
           }
         }
@@ -62,6 +61,8 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
         for (i in payload.docs) {
           if (payload.docs[i]._id && lookup[payload.docs[i]._id]) {
             payload.docs[i]._rev = lookup[payload.docs[i]._id]
+          } else {
+            delete payload.docs[i]._rev
           }
         }
 
