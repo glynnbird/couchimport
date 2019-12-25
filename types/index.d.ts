@@ -1,5 +1,5 @@
 import { Options } from 'csv-parse';
-import { Stream } from 'stream';
+import { Stream, Transform } from 'stream';
 
 declare module couchimport {
     type Delimiter = '?' | '\t' | ',';
@@ -24,11 +24,11 @@ declare module couchimport {
         overwrite?: boolean;
     }
 
-    function importStream(rs: Stream, callback: CouchImportCallback): void;
-    function importStream(rs: Stream, opts: Config, callback: CouchImportCallback): void;
+    function importStream(rs: Stream, callback: CouchImportCallback): Transform;
+    function importStream(rs: Stream, opts: Config, callback: CouchImportCallback): Transform;
 
-    function importFile(filename: string, callback: CouchImportCallback): void;
-    function importFile(filename: string, opts: Config, callback: CouchImportCallback): void;
+    function importFile(filename: string, callback: CouchImportCallback): Transform;
+    function importFile(filename: string, opts: Config, callback: CouchImportCallback): Transform;
 
     function exportStream(ws: Stream, callback: CouchExportCallback): void;
     function exportStream(ws: Stream, opts: Config, callback: CouchExportCallback): void;
