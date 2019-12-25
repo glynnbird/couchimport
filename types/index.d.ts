@@ -4,8 +4,8 @@ import { Stream, Transform } from 'stream';
 declare module couchimport {
     type Delimiter = '?' | '\t' | ',';
 
-    type CouchImportCallback = (err: Error, data: { total: number, totalFailed: number }) => void;
-    type CouchExportCallback = (err: Error, data: never) => void;
+    type ImportCallback = (err: Error, data: { total: number, totalFailed: number }) => void;
+    type ExportCallback = (err: Error, data: never) => void;
     type UrlPreviewCallback = (err: Error, data: any, delimiter: Delimiter) => void;
     type StreamPreviewCallback = (err: Error, data: any, delimiter: Delimiter) => void;
 
@@ -24,17 +24,17 @@ declare module couchimport {
         overwrite?: boolean;
     }
 
-    function importStream(rs: Stream, callback: CouchImportCallback): Transform;
-    function importStream(rs: Stream, opts: Config, callback: CouchImportCallback): Transform;
+    function importStream(rs: Stream, callback: ImportCallback): Transform;
+    function importStream(rs: Stream, opts: Config, callback: ImportCallback): Transform;
 
-    function importFile(filename: string, callback: CouchImportCallback): Transform;
-    function importFile(filename: string, opts: Config, callback: CouchImportCallback): Transform;
+    function importFile(filename: string, callback: ImportCallback): Transform;
+    function importFile(filename: string, opts: Config, callback: ImportCallback): Transform;
 
-    function exportStream(ws: Stream, callback: CouchExportCallback): void;
-    function exportStream(ws: Stream, opts: Config, callback: CouchExportCallback): void;
+    function exportStream(ws: Stream, callback: ExportCallback): void;
+    function exportStream(ws: Stream, opts: Config, callback: ExportCallback): void;
 
-    function exportFile(filename: string, callback: CouchExportCallback): void;
-    function exportFile(filename: string, opts: Config, callback: CouchExportCallback): void;
+    function exportFile(filename: string, callback: ExportCallback): void;
+    function exportFile(filename: string, opts: Config, callback: ExportCallback): void;
 
     function previewURL(u: string, opts: never, callback: UrlPreviewCallback): void;
 
