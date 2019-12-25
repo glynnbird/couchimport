@@ -1,21 +1,19 @@
-import { file, url, stream } from "./preview";
 import { Options } from 'csv-parse';
-import { default as transformer, MetaObject } from "./transformer";
 import { Stream } from 'stream';
 
 declare module couchimport {
     type CouchImportCallback = (err: any, data: { total: number, totalFailed: number }) => void;
     type CouchExportCallback = (err: any, data: never) => void;
 
-    interface Config {
+    export interface Config {
         url?: string;
         database?: string;
         delimiter?: Options['delimiter'];
         type?: 'json' | 'jsonl' | 'text';
         buffer?: number;
         jsonpath?: string;
-        transform?: transformer;
-        meta?: MetaObject;
+        transform?: (data: any, meta: {}) => any;
+        meta?: {};
         parallelism?: number;
         preview?: boolean;
         ignorefields?: string[];
@@ -34,9 +32,15 @@ declare module couchimport {
     function exportFile(filename: string, callback: CouchExportCallback): void;
     function exportFile(filename: string, opts: Config, callback: CouchExportCallback): void;
 
-    const previewCSVFile = file;
-    const previewURL = url;
-    const previewStream = stream;
+    type UrlPreviewCallback = (err: Error, data: any, delimiter: '?' | '\t' | ',') => void;
+    function previewURL(u: string, opts: never, callback: UrlPreviewCallback): void;
+
+    type StreamPreviewCallback = (err: any, data: any, delimiter: any) => void;
+    function previewStream(rs: any, callback: StreamPreviewCallback): void;
+    function previewStream(rs: any, opts: Config, callback: StreamPreviewCallback): void;
+
+    function previewCSVFile(filename: string, callback: StreamPreviewCallback): void;
+    function previewCSVFile(filename: string, opts: Config, callback: StreamPreviewCallback): void;
 }
 
 declare module "couchimport" {
