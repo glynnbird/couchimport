@@ -29,6 +29,7 @@
     "standard": "^14.3.1"
   },
   "main": "./app.js",
+  "types": "./types/index.d.ts",
   "bin": {
     "couchimport": "bin/couchimport.bin.js",
     "couchexport": "bin/couchexport.bin.js"
