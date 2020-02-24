@@ -129,14 +129,12 @@ const exportStream = function (ws, opts, callback) {
   let headings = []
   let lastsize = 0
   iam.getToken(process.env.IAM_API_KEY).then((t) => {
-    const nanoopts = { url: opts.url }
+    let headers = {}
     if (t) {
-      nanoopts.defaultHeaders = { Authorization: 'Bearer ' + t }
+      headers = { Authorization: 'Bearer ' + t }
     }
-    const Nano = require('nano')
-    const nano = Nano(nanoopts)
     const ChangesReader = require('changesreader')
-    const changesReader = new ChangesReader(opts.database, nano.request)
+    const changesReader = new ChangesReader(opts.database, opts.url, headers)
 
     const changesOpts = {
       batchSize: opts.buffer,

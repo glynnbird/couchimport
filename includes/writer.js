@@ -1,6 +1,7 @@
 const async = require('async')
 const debug = require('debug')('couchimport')
 const iam = require('./iam.js')
+const axios = require('axios').default
 
 // look for IAM_API_KEY
 const IAM_API_KEY = process.env.IAM_API_KEY ? process.env.IAM_API_KEY : null
@@ -18,12 +19,10 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
   iam.getToken(IAM_API_KEY).then(function (t) {
     iamAccessToken = t
 
-    const opts = { url: couchURL }
+    const headers = { }
     if (IAM_API_KEY && iamAccessToken) {
-      opts.defaultHeaders = { Authorization: 'Bearer ' + iamAccessToken }
+      headers.Authorization = 'Bearer ' + iamAccessToken
     }
-    const cloudant = require('nano')(opts)
-    const db = cloudant.db.use(couchDatabase)
 
     // process the writes in bulk as a queue
     const q = async.queue(async (payload) => {
@@ -48,7 +47,16 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
             keys.push(payload.docs[i]._id)
           }
         }
-        const existingData = await db.fetch({ keys: keys })
+        const req = {
+          method: 'post',
+          baseURL: couchURL,
+          url: couchDatabase + '/_all_docs',
+          data: { keys: keys },
+          headers: headers
+        }
+        const response = axios(req)
+        const existingData = response.data
+
         // make lookup table between id-->rev
         const lookup = {}
         for (i in existingData.rows) {
@@ -73,7 +81,15 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
       // write data
       let data = null
       try {
-        data = await db.bulk(payload)
+        const req = {
+          method: 'post',
+          baseURL: couchURL,
+          url: couchDatabase + '/_bulk_docs',
+          headers: headers,
+          data: payload
+        }
+        const response = await axios(req)
+        data = response.data
       } catch (e) {
         console.log('ERR', e)
         writer.emit('writeerror', e)
