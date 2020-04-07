@@ -1,6 +1,6 @@
 {
   "name": "couchimport",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "CouchImport - command-line helper to bulk import/export data from CSV/TSV",
   "repository": "https://github.com/glynnbird/couchimport.git",
   "keywords": [
@@ -18,15 +18,16 @@
     "async": "^2.6.1",
     "axios": "^0.19.2",
     "ccurllib": "^1.0.3",
-    "changesreader": "^2.0.1",
-    "csv-parse": "^4.8.5",
+    "changesreader": "^2.1.0",
+    "csv-parse": "^4.8.8",
     "debug": "4.1.1",
-    "yargs": "^14.2.0"
+    "qrate": "^1.2.0",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "mocha": "^7.0.1",
-    "nock": "12.0.0",
-    "standard": "^14.3.1"
+    "mocha": "^7.1.1",
+    "nock": "^12.0.3",
+    "standard": "^14.3.3"
   },
   "main": "./app.js",
   "types": "./types/index.d.ts",

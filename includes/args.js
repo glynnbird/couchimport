@@ -38,6 +38,11 @@ const parse = function () {
       describe: 'the number of HTTP requests to have in-flight at any one time',
       default: process.env.COUCH_PARALLELISM ? parseInt(process.env.COUCH_PARALLELISM) : 1
     })
+    .option('maxwps', {
+      number: true,
+      describe: 'the maximum number of write operations to perform per second',
+      default: process.env.MAX_WPS ? parseInt(process.env.MAX_WPS) : 0
+    })
     .option('type', {
       alias: 't',
       describe: 'the type of file being imported',
