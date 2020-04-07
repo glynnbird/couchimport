@@ -221,6 +221,8 @@ If you are importing data into a CouchDB database that already contains data, an
 * COUCH_PREVIEW - run in preview mode
 * COUCH_IGNORE_FIELDS - a comma-separated list of field names to ignore on import or export e.g. price,url,image
 * COUCH_OVERWRITE - overwrite existing document revisions with supplied data
+* COUCH_PARALLELISM - the maximum number of HTTP requests to have in flight at any one time (default: 1)
+* COUCH_MAX_WPS - the maximum number of write API calls to make per second (rate limiting) (default: 0 - no rate limiting)
 
 ## Command-line parameters
 
@@ -239,6 +241,7 @@ You can also configure `couchimport` and `couchexport` using command-line parame
 * `--preview`/`-p` - if 'true', runs in preview mode (default false)
 * `--ignorefields`/`-i` - a comma-separated list of fields to ignore input or output (default none)
 * `--parallelism` - the number of HTTP request to have in flight at any one time (default 1)
+* `--maxwps` - the maximum number of write API calls to make per second (default 0 - no rate limiting)
 * `--overwrite`/`-o` - overwrite existing document revisions with supplied data (default: false)
 
 e.g.
@@ -387,10 +390,12 @@ The emitted data is an object containing:
 * failed - the number of documents failed to write in the last batch
 * totalfailed - the number of documents that failed to write in total
 
-## Parallelism
+## Parallelism & Rate limiting
 
 Using the `COUCH_PARALLELISM` environment variable or the `--parallelism` command-line option, couchimport can be configured to write data in multiple parallel operations. If you have the networkbandwidth, this can significantly speed up large data imports e.g.
 
 ```sh
   cat bigdata.csv | couchimport --database mydb --parallelism 10 --delimiter ","
 ```
+
+This can be combined with the `COUCH_MAX_WPS`/`--maxwps` parameter to limit the number write API calls dispatched per second to make sure you don't exceed the number writes on a rate-limited service.

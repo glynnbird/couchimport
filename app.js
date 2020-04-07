@@ -19,7 +19,7 @@ const importStream = function (rs, opts, callback) {
   opts = defaults.merge(opts)
 
   // load dependencies
-  const writer = require('./includes/writer.js')(opts.url, opts.database, opts.buffer, opts.parallelism, opts.ignorefields, opts.overwrite)
+  const writer = require('./includes/writer.js')(opts.url, opts.database, opts.buffer, opts.parallelism, opts.ignorefields, opts.overwrite, opts.maxwps)
   const transformer = require('./includes/transformer.js')(opts.transform, opts.meta)
   const JSONStream = require('JSONStream')
   if (opts.type === 'jsonl') {

@@ -1,4 +1,5 @@
 const async = require('async')
+const qrate = require('qrate')
 const debug = require('debug')('couchimport')
 const iam = require('./iam.js')
 const axios = require('axios').default
@@ -7,7 +8,7 @@ const axios = require('axios').default
 const IAM_API_KEY = process.env.IAM_API_KEY ? process.env.IAM_API_KEY : null
 let iamAccessToken = null
 
-module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ignoreFields, overwrite) {
+module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ignoreFields, overwrite, maxwps) {
   const stream = require('stream')
 
   let buffer = []
@@ -25,7 +26,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
     }
 
     // process the writes in bulk as a queue
-    const q = async.queue(async (payload) => {
+    const q = qrate(async (payload) => {
       // detected whether we need to supply new_edits = false
       let allHaveRev = true
       for (var i in payload.docs) {
@@ -116,7 +117,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
       totalfailed += failed
       writer.emit('written', { documents: ok, failed: failed, total: written, totalfailed: totalfailed })
       debug({ documents: ok, failed: failed, total: written, totalfailed: totalfailed })
-    }, parallelism)
+    }, parallelism, maxwps || undefined)
 
     // write the contents of the buffer to CouchDB in blocks of 500
     const processBuffer = function (flush, callback) {
