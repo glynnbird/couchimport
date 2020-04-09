@@ -1,4 +1,5 @@
 const fs = require('fs')
+const stream = require('stream')
 const debugimport = require('debug')('couchimport')
 const debugexport = require('debug')('couchexport')
 const preview = require('./includes/preview.js')
@@ -18,48 +19,62 @@ const importStream = function (rs, opts, callback) {
 
   opts = defaults.merge(opts)
 
-  // load dependencies
-  const writer = require('./includes/writer.js')(opts.url, opts.database, opts.buffer, opts.parallelism, opts.ignorefields, opts.overwrite, opts.maxwps)
-  const transformer = require('./includes/transformer.js')(opts.transform, opts.meta)
-  const JSONStream = require('JSONStream')
-  if (opts.type === 'jsonl') {
-    // pipe the file to a streaming JSON parser
-    rs.pipe(JSONStream.parse())
-      .pipe(transformer) // process each object
-      .pipe(writer) // write the data
-  } else if (opts.type === 'json') {
-    // if this is a JSON stream
-    if (!opts.jsonpath) {
-      const msg = 'ERROR: you must specify a JSON path using --jsonpath or COUCH_JSON_PATH'
-      debugimport(msg)
-      return callback(msg, null)
+  // handle IAM
+  const IAM_API_KEY = process.env.IAM_API_KEY ? process.env.IAM_API_KEY : null
+  const headers = { }
+
+  const passThroughStream = new stream.PassThrough()
+
+  iam.getToken(IAM_API_KEY).then(function (iamAccessToken) {
+    if (IAM_API_KEY && iamAccessToken) {
+      headers.Authorization = 'Bearer ' + iamAccessToken
     }
+
+    const writer = require('./includes/writer.js')(opts.url, opts.database, opts.buffer, opts.parallelism, opts.ignorefields, opts.overwrite, opts.maxwps, headers)
+    const transformer = require('./includes/transformer.js')(opts.transform, opts.meta)
+    const JSONStream = require('JSONStream')
+    if (opts.type === 'jsonl') {
     // pipe the file to a streaming JSON parser
-    rs.pipe(JSONStream.parse(opts.jsonpath))
-      .pipe(transformer) // process each object
-      .pipe(writer) // write the data
-  } else {
+      rs.pipe(JSONStream.parse())
+        .pipe(transformer) // process each object
+        .pipe(writer) // write the data
+        .pipe(passThroughStream)
+    } else if (opts.type === 'json') {
+    // if this is a JSON stream
+      if (!opts.jsonpath) {
+        const msg = 'ERROR: you must specify a JSON path using --jsonpath or COUCH_JSON_PATH'
+        debugimport(msg)
+        return callback(msg, null)
+      }
+      // pipe the file to a streaming JSON parser
+      rs.pipe(JSONStream.parse(opts.jsonpath))
+        .pipe(transformer) // process each object
+        .pipe(writer) // write the data
+        .pipe(passThroughStream)
+    } else {
     // load the CSV parser
-    const parse = require('csv-parse')
+      const parse = require('csv-parse')
 
-    const objectifier = parse({ delimiter: opts.delimiter, columns: true, skip_empty_lines: true, relax: true })
+      const objectifier = parse({ delimiter: opts.delimiter, columns: true, skip_empty_lines: true, relax: true })
 
-    // pipe the input to the output, via transformation functions
-    rs.pipe(objectifier) // turn each line into an object
-      .pipe(transformer) // process each object
-      .pipe(writer) // write the data
-  }
+      // pipe the input to the output, via transformation functions
+      rs.pipe(objectifier) // turn each line into an object
+        .pipe(transformer) // process each object
+        .pipe(writer) // write the data
+        .pipe(passThroughStream)
+    }
 
-  writer.on('writecomplete', function (data) {
-    callback(null, data)
+    writer.on('writecomplete', function (data) {
+      callback(null, data)
+    })
+
+    rs.on('error', function (e) {
+      debugimport('error', e)
+      callback(e, null)
+    })
   })
 
-  rs.on('error', function (e) {
-    debugimport('error', e)
-    callback(e, null)
-  })
-
-  return writer
+  return passThroughStream
 }
 
 // import a named file into CouchDB
