@@ -45,9 +45,9 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
         data: { keys: keys },
         headers: headers
       }
-      const response = axios(req)
+      const response = await axios(req)
+      
       const existingData = response.data
-
       // make lookup table between id-->rev
       const lookup = {}
       for (i in existingData.rows) {
