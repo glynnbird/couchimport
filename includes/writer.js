@@ -13,6 +13,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
 
   let written = 0
   let totalfailed = 0
+  const errorCodes = { }
   const writer = new stream.Transform({ objectMode: true })
 
   // process the writes in bulk as a queue
@@ -71,6 +72,11 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
 
     // write data
     let data = null
+    let ok = 0
+    let failed = 0
+    let statusCode
+    const start = new Date().getTime()
+    let latency
     try {
       const req = {
         method: 'post',
@@ -80,33 +86,45 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
         data: payload
       }
       const response = await axios(req)
+      latency = new Date().getTime() - start
       data = response.data
+      statusCode = response.status
+
+      // look into the success or failure of each write
+      if (allHaveRev) {
+        ok += payload.docs.length
+      } else {
+        for (i in data) {
+          const d = data[i]
+          const isok = !!((d.id && d.rev))
+          if (isok) {
+            ok++
+          } else {
+            failed++
+            writer.emit('writefail', d)
+            debug(d)
+          }
+        }
+      }
     } catch (e) {
-      console.log('ERR', e)
+      latency = new Date().getTime() - start
+      statusCode = e.response ? e.response.status : e.code
+      failed = payload.docs.length
       writer.emit('writeerror', e)
     }
 
-    let ok = 0
-    let failed = 0
-    if (allHaveRev) {
-      ok += payload.docs.length
+    // log response code
+    if (errorCodes[statusCode]) {
+      errorCodes[statusCode]++
     } else {
-      for (i in data) {
-        const d = data[i]
-        const isok = !!((d.id && d.rev))
-        if (isok) {
-          ok++
-        } else {
-          failed++
-          writer.emit('writefail', d)
-          debug(d)
-        }
-      }
+      errorCodes[statusCode] = 1
     }
+
     written += ok
     totalfailed += failed
-    writer.emit('written', { documents: ok, failed: failed, total: written, totalfailed: totalfailed })
-    debug({ documents: ok, failed: failed, total: written, totalfailed: totalfailed })
+    const status = { documents: ok, failed: failed, total: written, totalfailed: totalfailed, statusCodes: errorCodes, latency: latency}
+    writer.emit('written', status)
+    debug(JSON.stringify(status))
   }, parallelism, maxwps || undefined)
 
   // write the contents of the buffer to CouchDB in blocks of 500
@@ -135,7 +153,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
 
         function () {
           if (flush) {
-            writer.emit('writecomplete', { total: written, totalfailed: totalfailed })
+            writer.emit('writecomplete', { total: written, totalfailed: totalfailed, errors: errorCodes })
           }
           callback()
         })

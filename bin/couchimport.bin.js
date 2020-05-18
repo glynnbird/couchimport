@@ -50,6 +50,7 @@ if (argv.preview) {
     if (err) {
       console.error('Error', err)
     }
+    process.exit(0)
   }).on('written', function (data) {
     debug('Written ok:' + data.documents + ' - failed: ' + data.failed + ' -  (' + data.total + ')')
   }).on('writeerror', function (err) {
