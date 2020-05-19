@@ -30,7 +30,7 @@ const importStream = function (rs, opts, callback) {
       headers.Authorization = 'Bearer ' + iamAccessToken
     }
 
-    const writer = require('./includes/writer.js')(opts.url, opts.database, opts.buffer, opts.parallelism, opts.ignorefields, opts.overwrite, opts.maxwps, headers)
+    const writer = require('./includes/writer.js')(opts.url, opts.database, opts.buffer, opts.parallelism, opts.ignorefields, opts.overwrite, opts.maxwps, opts.retry, headers)
     const transformer = require('./includes/transformer.js')(opts.transform, opts.meta)
     const JSONStream = require('JSONStream')
     if (opts.type === 'jsonl') {

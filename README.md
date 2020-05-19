@@ -223,6 +223,7 @@ If you are importing data into a CouchDB database that already contains data, an
 * COUCH_OVERWRITE - overwrite existing document revisions with supplied data
 * COUCH_PARALLELISM - the maximum number of HTTP requests to have in flight at any one time (default: 1)
 * COUCH_MAX_WPS - the maximum number of write API calls to make per second (rate limiting) (default: 0 - no rate limiting)
+* COUCH_RETRY - whether to retry requests which yield a 429 response (default: false)
 
 ## Command-line parameters
 
@@ -243,6 +244,7 @@ You can also configure `couchimport` and `couchexport` using command-line parame
 * `--parallelism` - the number of HTTP request to have in flight at any one time (default 1)
 * `--maxwps` - the maximum number of write API calls to make per second (default 0 - no rate limiting)
 * `--overwrite`/`-o` - overwrite existing document revisions with supplied data (default: false)
+* `--retry`/`-r` - whether to retry requests which yield a 429 response (default: false)
 
 e.g.
 

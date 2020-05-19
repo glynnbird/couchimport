@@ -3,7 +3,7 @@ const qrate = require('qrate')
 const debug = require('debug')('couchimport')
 const axios = require('axios').default
 
-module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ignoreFields, overwrite, maxwps, headers) {
+module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ignoreFields, overwrite, maxwps, retry, headers) {
   const stream = require('stream')
 
   let buffer = []
@@ -47,7 +47,6 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
         headers: headers
       }
       const response = await axios(req)
-      
       const existingData = response.data
       // make lookup table between id-->rev
       const lookup = {}
@@ -111,6 +110,9 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
       statusCode = e.response ? e.response.status : e.code
       failed = payload.docs.length
       writer.emit('writeerror', e)
+      if (retry) {
+        q.push(payload)
+      }
     }
 
     // log response code
@@ -122,7 +124,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
 
     written += ok
     totalfailed += failed
-    const status = { documents: ok, failed: failed, total: written, totalfailed: totalfailed, statusCodes: errorCodes, latency: latency}
+    const status = { documents: ok, failed: failed, total: written, totalfailed: totalfailed, statusCodes: errorCodes, latency: latency }
     writer.emit('written', status)
     debug(JSON.stringify(status))
   }, parallelism, maxwps || undefined)
