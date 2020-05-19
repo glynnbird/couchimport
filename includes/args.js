@@ -71,6 +71,12 @@ const parse = function () {
       describe: 'whether to overwrite existing revisions with supplied data',
       default: process.env.COUCH_OVERWRITE ? process.env.COUCH_OVERWRITE : false
     })
+    .option('retry', {
+      alias: 'r',
+      boolean: true,
+      describe: 'whether to retry requests that yield a HTTP 429 response',
+      default: process.env.COUCH_RETRY ? process.env.COUCH_RETRY : false
+    })
     .argv
 
   // load the transformation JavaScript
