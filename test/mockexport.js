@@ -1,7 +1,7 @@
 /* global describe it before */
-var nock = require('nock')
-var URL = 'http://localhost:5984'
-var couchimport = require('../app.js')
+const nock = require('nock')
+const URL = 'http://localhost:5984'
+const couchimport = require('../app.js')
 const assert = require('assert')
 
 describe('Export CSV file', function () {
@@ -9,13 +9,13 @@ describe('Export CSV file', function () {
   })
 
   it('export a CSV file', function (done) {
-    var opts = { delimiter: ',', url: URL, database: 'mydb', buffer: 8, since: '0' }
-    var path = require('path')
-    var fs = require('fs')
-    var reply = fs.readFileSync(path.join(__dirname, 'changes.json'))
-    var reply2 = fs.readFileSync(path.join(__dirname, 'changes2.json'))
-    var ref = fs.readFileSync(path.join(__dirname, 'ref.csv'))
-    var scope = nock(URL)
+    const opts = { delimiter: ',', url: URL, database: 'mydb', buffer: 8, since: '0' }
+    const path = require('path')
+    const fs = require('fs')
+    const reply = fs.readFileSync(path.join(__dirname, 'changes.json'))
+    const reply2 = fs.readFileSync(path.join(__dirname, 'changes2.json'))
+    const ref = fs.readFileSync(path.join(__dirname, 'ref.csv'))
+    const scope = nock(URL)
       .post('/mydb/_changes')
       .query({ feed: 'longpoll', since: '0', limit: 8, timeout: 0, include_docs: true })
       .reply(200, reply)
@@ -26,7 +26,7 @@ describe('Export CSV file', function () {
 
     couchimport.exportFile('/tmp/test.csv', opts, function (err, data) {
       assert.strictEqual(err, null)
-      var result = fs.readFileSync('/tmp/test.csv')
+      const result = fs.readFileSync('/tmp/test.csv')
       assert.strictEqual(result.toString(), ref.toString())
       assert(scope.isDone())
       done()

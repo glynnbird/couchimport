@@ -117,7 +117,7 @@ const exportStream = function (ws, opts, callback) {
 
     // output columns
     const cols = []
-    for (var i in headings) {
+    for (const i in headings) {
       const v = row[headings[i]]
       const t = typeof v
       if (v == null) {
@@ -161,7 +161,7 @@ const exportStream = function (ws, opts, callback) {
       .on('batch', (batch) => {
         lastsize = batch.length
         total += lastsize
-        for (var i in batch) {
+        for (const i in batch) {
           if (!batch[i].doc._deleted) {
             // apply transform
             if (typeof opts.transform === 'function') {

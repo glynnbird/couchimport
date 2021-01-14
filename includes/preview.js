@@ -38,7 +38,7 @@ const first10kURL = function (u, callback) {
 
   const alldone = function () {
     if (!onceonly) {
-      var str = b.toString('utf8')
+      const str = b.toString('utf8')
       onceonly = true
       callback(null, str)
     }
@@ -76,12 +76,12 @@ const url = function (u, opts, callback) {
 }
 
 const file = function (filename, opts, callback) {
-  var rs = fs.createReadStream(filename, { encoding: 'utf8' })
+  const rs = fs.createReadStream(filename, { encoding: 'utf8' })
   stream(rs, opts, callback)
 }
 
 const stream = function (rs, opts, callback) {
-  var calledback = false
+  let calledback = false
 
   rs.on('readable', function () {
     let str = ''
@@ -99,7 +99,7 @@ const stream = function (rs, opts, callback) {
         // allow transformation in preview
         if (opts.transform && typeof opts.transform === 'function') {
           const func = opts.transform
-          for (var i in data) {
+          for (const i in data) {
             data[i] = func(data[i], opts.meta)
           }
         }

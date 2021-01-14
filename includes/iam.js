@@ -2,7 +2,6 @@ const ccurllib = require('ccurllib')
 
 const getToken = async (IAM_API_KEY) => {
   if (IAM_API_KEY) {
-    ccurllib.init()
     let obj
     obj = ccurllib.get(IAM_API_KEY)
     if (!obj) {

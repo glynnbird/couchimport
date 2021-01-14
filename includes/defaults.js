@@ -20,7 +20,7 @@ const merge = function (myopts) {
   if (myopts == null) {
     return get()
   }
-  for (var i in defaults) {
+  for (const i in defaults) {
     if (typeof myopts[i] === 'undefined') {
       myopts[i] = defaults[i]
     }
