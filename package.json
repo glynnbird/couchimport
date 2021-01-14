@@ -18,6 +18,7 @@
     "async": "^2.6.1",
     "axios": "^0.21.1",
     "ccurllib": "^1.1.1",
+    "changesreader": "^2.1.1",
     "csv-parse": "^4.12.0",
     "debug": "4.2.0",
     "qrate": "^1.2.0",
