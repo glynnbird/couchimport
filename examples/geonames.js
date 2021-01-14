@@ -1,5 +1,5 @@
 // geonames feature codes
-var featureCodes = {
+const featureCodes = {
   'A.ADM1': 'first-order administrative division',
   'A.ADM1H': 'historical first-order administrative division',
   'A.ADM2': 'second-order administrative division',
@@ -671,13 +671,13 @@ var featureCodes = {
 
 // geonames transformation function
 // -- each function takes a "doc" and should return a doc, synchronously
-var x = function (doc) {
+const x = function (doc) {
   doc.geonameid = parseInt(doc.geonameid)
   doc.alternatenames = doc.alternatenames.split(',')
   doc.latitude = parseFloat(doc.latitude)
   doc.longitude = parseFloat(doc.longitude)
   doc.population = parseInt(doc.population)
-  var code = doc.feature_class + '.' + doc.feature_code
+  const code = doc.feature_class + '.' + doc.feature_code
   doc.feature_name = featureCodes[code]
   delete doc.dem
   delete doc.elevation

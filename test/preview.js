@@ -1,6 +1,6 @@
-var couchimport = require('../app.js')
-var assert = require('assert')
-var opts = { preview: true }
+const couchimport = require('../app.js')
+const assert = require('assert')
+const opts = { preview: true }
 
 describe('Preview mode', function () {
   it('preview csv', function (done) {

@@ -18,9 +18,10 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
 
   // process the writes in bulk as a queue
   const q = qrate(async (payload) => {
+    let i
     // detected whether we need to supply new_edits = false
     let allHaveRev = true
-    for (var i in payload.docs) {
+    for (i in payload.docs) {
       if (!payload.docs[i]._rev) {
         allHaveRev = false
         break

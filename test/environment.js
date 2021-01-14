@@ -52,7 +52,7 @@ describe('Environment variables', function () {
   })
 
   it('respects the meta variable', function (done) {
-    var str = JSON.stringify(config.meta)
+    const str = JSON.stringify(config.meta)
     assert.strictEqual(str, MY_META)
     done()
   })
