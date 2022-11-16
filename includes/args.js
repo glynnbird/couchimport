@@ -98,5 +98,5 @@ const parse = function () {
 }
 
 module.exports = {
-  parse: parse
+  parse
 }

@@ -29,6 +29,6 @@ const merge = function (myopts) {
 }
 
 module.exports = {
-  get: get,
-  merge: merge
+  get,
+  merge
 }

@@ -1,13 +1,13 @@
 
 const URL = require('url')
-const parse = require('csv-parse')
+const parse = require('csv-parse').parse
 const fs = require('fs')
 
 const analyseString = function (str, callback) {
   const lines = str.split('\n')
   str = lines.splice(0, 4).join('\n') + '\n'
-  parse(str, { delimiter: ',', columns: true, skip_empty_lines: true, relax: true }, function (err1, csvdata) {
-    parse(str, { delimiter: '\t', columns: true, skip_empty_lines: true, relax: true }, function (err2, tsvdata) {
+  parse(str, { delimiter: ',', columns: true, skip_empty_lines: true, relax: true, relax_quotes: true }, function (err1, csvdata) {
+    parse(str, { delimiter: '\t', columns: true, skip_empty_lines: true, relax: true, relax_quotes: true }, function (err2, tsvdata) {
       let delimiter = '?' // unknown
 
       // look at CSV version
@@ -115,7 +115,7 @@ const stream = function (rs, opts, callback) {
 }
 
 module.exports = {
-  file: file,
-  url: url,
-  stream: stream
+  file,
+  url,
+  stream
 }

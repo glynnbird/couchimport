@@ -32,10 +32,10 @@ const importStream = function (rs, opts, callback) {
 
     const writer = require('./includes/writer.js')(opts.url, opts.database, opts.buffer, opts.parallelism, opts.ignorefields, opts.overwrite, opts.maxwps, opts.retry, headers)
     const transformer = require('./includes/transformer.js')(opts.transform, opts.meta)
-    const JSONStream = require('JSONStream')
+    const jsonpour = require('jsonpour')
     if (opts.type === 'jsonl') {
     // pipe the file to a streaming JSON parser
-      rs.pipe(JSONStream.parse())
+      rs.pipe(jsonpour.parse())
         .pipe(transformer) // process each object
         .pipe(writer) // write the data
         .pipe(passThroughStream)
@@ -47,15 +47,15 @@ const importStream = function (rs, opts, callback) {
         return callback(msg, null)
       }
       // pipe the file to a streaming JSON parser
-      rs.pipe(JSONStream.parse(opts.jsonpath))
+      rs.pipe(jsonpour.parse(opts.jsonpath))
         .pipe(transformer) // process each object
         .pipe(writer) // write the data
         .pipe(passThroughStream)
     } else {
     // load the CSV parser
-      const parse = require('csv-parse')
+      const parse = require('csv-parse').parse
 
-      const objectifier = parse({ delimiter: opts.delimiter, columns: true, skip_empty_lines: true, relax: true })
+      const objectifier = parse({ delimiter: opts.delimiter, columns: true, skip_empty_lines: true, relax: true, relax_quotes: true })
 
       // pipe the input to the output, via transformation functions
       rs.pipe(objectifier) // turn each line into an object
@@ -217,11 +217,11 @@ const previewURL = preview.url
 const previewStream = preview.stream
 
 module.exports = {
-  importStream: importStream,
-  importFile: importFile,
-  exportStream: exportStream,
-  exportFile: exportFile,
-  previewCSVFile: previewCSVFile,
-  previewURL: previewURL,
-  previewStream: previewStream
+  importStream,
+  importFile,
+  exportStream,
+  exportFile,
+  previewCSVFile,
+  previewURL,
+  previewStream
 }

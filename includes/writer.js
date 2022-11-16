@@ -1,7 +1,7 @@
 const async = require('async')
 const qrate = require('qrate')
 const debug = require('debug')('couchimport')
-const axios = require('axios').default
+const axios = require('axios')
 
 module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ignoreFields, overwrite, maxwps, retry, headers) {
   const stream = require('stream')
@@ -44,8 +44,8 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
         method: 'post',
         baseURL: couchURL,
         url: couchDatabase + '/_all_docs',
-        data: { keys: keys },
-        headers: headers
+        data: { keys },
+        headers
       }
       const response = await axios(req)
       const existingData = response.data
@@ -82,10 +82,10 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
         method: 'post',
         baseURL: couchURL,
         url: couchDatabase + '/_bulk_docs',
-        headers: headers,
+        headers,
         data: payload
       }
-      const response = await axios(req)
+      const response = await axios.request(req)
       latency = new Date().getTime() - start
       data = response.data
       statusCode = response.status
@@ -125,7 +125,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
 
     written += ok
     totalfailed += failed
-    const status = { documents: ok, failed: failed, total: written, totalfailed: totalfailed, statusCodes: errorCodes, latency: latency }
+    const status = { documents: ok, failed, total: written, totalfailed, statusCodes: errorCodes, latency }
     writer.emit('written', status)
     debug(JSON.stringify(status))
   }, parallelism, maxwps || undefined)
@@ -156,7 +156,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
 
         function () {
           if (flush) {
-            writer.emit('writecomplete', { total: written, totalfailed: totalfailed, errors: errorCodes })
+            writer.emit('writecomplete', { total: written, totalfailed, errors: errorCodes })
           }
           callback()
         })
