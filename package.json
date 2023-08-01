@@ -14,20 +14,20 @@
   "author": "Glynn Bird <glynn.bird@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "jsonpour": "^1.0.1",
+    "jsonpour": "^1.0.2",
     "async": "^2.6.4",
-    "axios": "^1.2.2",
-    "ccurllib": "^1.2.0",
+    "axios": "^1.4.0",
+    "ccurllib": "^1.2.3",
     "changesreader": "^2.2.0",
-    "csv-parse": "^5.3.3",
+    "csv-parse": "^5.4.0",
     "debug": "4.3.4",
     "qrate": "^1.2.1",
-    "yargs": "^17.6.2"
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "mocha": "^10.2.0",
-    "nock": "^13.2.9",
-    "standard": "^17.0.0"
+    "nock": "^13.3.2",
+    "standard": "^17.1.0"
   },
   "main": "./app.js",
   "types": "./types/index.d.ts",
