@@ -1,7 +1,6 @@
 const fs = require('fs')
 const stream = require('stream')
-const debugimport = require('debug')('couchimport')
-const debugexport = require('debug')('couchexport')
+
 const preview = require('./includes/preview.js')
 const defaults = require('./includes/defaults.js')
 const iam = require('./includes/iam.js')
@@ -29,7 +28,6 @@ const importStream = function (rs, opts, callback) {
     if (IAM_API_KEY && iamAccessToken) {
       headers.Authorization = 'Bearer ' + iamAccessToken
     }
-
     const writer = require('./includes/writer.js')(opts.url, opts.database, opts.buffer, opts.parallelism, opts.ignorefields, opts.overwrite, opts.maxwps, opts.retry, headers)
     const transformer = require('./includes/transformer.js')(opts.transform, opts.meta)
     const jsonpour = require('jsonpour')
@@ -43,7 +41,7 @@ const importStream = function (rs, opts, callback) {
     // if this is a JSON stream
       if (!opts.jsonpath) {
         const msg = 'ERROR: you must specify a JSON path using --jsonpath or COUCH_JSON_PATH'
-        debugimport(msg)
+        // debugimport(msg)
         return callback(msg, null)
       }
       // pipe the file to a streaming JSON parser
@@ -69,7 +67,7 @@ const importStream = function (rs, opts, callback) {
     })
 
     rs.on('error', function (e) {
-      debugimport('error', e)
+      // debugimport('error', e)
       callback(e, null)
     })
   })
@@ -178,7 +176,7 @@ const exportStream = function (ws, opts, callback) {
             }
           }
         }
-        debugexport('Output', batch.length, '[' + total + ']')
+        // debugexport('Output', batch.length, '[' + total + ']')
       })
       .on('end', () => {
         callback(null, null)

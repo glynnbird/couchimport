@@ -1,6 +1,5 @@
 const async = require('async')
 const qrate = require('qrate')
-const debug = require('debug')('couchimport')
 const axios = require('axios')
 
 module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ignoreFields, overwrite, maxwps, retry, headers) {
@@ -102,7 +101,6 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
           } else {
             failed++
             writer.emit('writefail', d)
-            debug(d)
           }
         }
       }
@@ -127,7 +125,6 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
     totalfailed += failed
     const status = { documents: ok, failed, total: written, totalfailed, statusCodes: errorCodes, latency }
     writer.emit('written', status)
-    debug(JSON.stringify(status))
   }, parallelism, maxwps || undefined)
 
   // write the contents of the buffer to CouchDB in blocks of 500
