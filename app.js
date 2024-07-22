@@ -9,70 +9,64 @@ const iam = require('./includes/iam.js')
 // rs - readable stream
 // opts - an options object, or null for defaults
 // callback - called when complete
-const importStream = function (rs, opts, callback) {
-  // sort the paramters
-  if (typeof callback === 'undefined' && typeof opts === 'function') {
-    callback = opts
-    opts = {}
-  }
+const importStream = async function (rs, opts) {
+  return new Promise((resolve, reject) => {
+    opts = defaults.merge(opts)
 
-  opts = defaults.merge(opts)
-
-  // handle IAM
-  const IAM_API_KEY = process.env.IAM_API_KEY ? process.env.IAM_API_KEY : null
-  const headers = { }
-
-  const passThroughStream = new stream.PassThrough()
-
-  iam.getToken(IAM_API_KEY).then(function (iamAccessToken) {
-    if (IAM_API_KEY && iamAccessToken) {
-      headers.Authorization = 'Bearer ' + iamAccessToken
-    }
-    const writer = require('./includes/writer.js')(opts.url, opts.database, opts.buffer, opts.parallelism, opts.ignorefields, opts.overwrite, opts.maxwps, opts.retry, headers)
-    const transformer = require('./includes/transformer.js')(opts.transform, opts.meta)
-    const jsonpour = require('jsonpour')
-    if (opts.type === 'jsonl') {
-    // pipe the file to a streaming JSON parser
-      rs.pipe(jsonpour.parse())
-        .pipe(transformer) // process each object
-        .pipe(writer) // write the data
-        .pipe(passThroughStream)
-    } else if (opts.type === 'json') {
-    // if this is a JSON stream
-      if (!opts.jsonpath) {
-        const msg = 'ERROR: you must specify a JSON path using --jsonpath or COUCH_JSON_PATH'
-        // debugimport(msg)
-        return callback(msg, null)
+    // handle IAM
+    const IAM_API_KEY = process.env.IAM_API_KEY ? process.env.IAM_API_KEY : null
+    const headers = { }
+    const passThroughStream = new stream.PassThrough()
+    iam.getToken(IAM_API_KEY).then(function (iamAccessToken) {
+      if (IAM_API_KEY && iamAccessToken) {
+        headers.Authorization = 'Bearer ' + iamAccessToken
       }
-      // pipe the file to a streaming JSON parser
-      rs.pipe(jsonpour.parse(opts.jsonpath))
-        .pipe(transformer) // process each object
-        .pipe(writer) // write the data
-        .pipe(passThroughStream)
-    } else {
-    // load the CSV parser
-      const parse = require('csv-parse').parse
-
-      const objectifier = parse({ delimiter: opts.delimiter, columns: true, skip_empty_lines: true, relax: true, relax_quotes: true })
-
-      // pipe the input to the output, via transformation functions
-      rs.pipe(objectifier) // turn each line into an object
-        .pipe(transformer) // process each object
-        .pipe(writer) // write the data
-        .pipe(passThroughStream)
-    }
-
-    writer.on('writecomplete', function (data) {
-      callback(null, data)
-    })
-
-    rs.on('error', function (e) {
-      // debugimport('error', e)
-      callback(e, null)
+      const writer = require('./includes/writer.js')(opts.url, opts.database, opts.buffer, opts.parallelism, opts.ignorefields, opts.overwrite, opts.maxwps, opts.retry, headers)
+      const transformer = require('./includes/transformer.js')(opts.transform, opts.meta)
+      const jsonpour = require('jsonpour')
+      if (opts.type === 'jsonl') {
+        // pipe the file to a streaming JSON parser
+        rs.pipe(jsonpour.parse())
+          .pipe(transformer) // process each object
+          .pipe(writer) // write the data
+          .pipe(passThroughStream)
+      } else if (opts.type === 'json') {
+      // if this is a JSON stream
+        if (!opts.jsonpath) {
+          const msg = 'ERROR: you must specify a JSON path using --jsonpath or COUCH_JSON_PATH'
+          // debugimport(msg)
+          throw new Error(e)
+        }
+        // pipe the file to a streaming JSON parser
+        rs.pipe(jsonpour.parse(opts.jsonpath))
+          .pipe(transformer) // process each object
+          .pipe(writer) // write the data
+          .pipe(passThroughStream)
+      } else {
+      // load the CSV parser
+        const parse = require('csv-parse').parse
+  
+        const objectifier = parse({ delimiter: opts.delimiter, columns: true, skip_empty_lines: true, relax: true, relax_quotes: true })
+  
+        // pipe the input to the output, via transformation functions
+        rs.pipe(objectifier) // turn each line into an object
+          .pipe(transformer) // process each object
+          .pipe(writer) // write the data
+          .pipe(passThroughStream)
+      }
+  
+      writer.on('writecomplete', function (data) {
+        console.log('WRITE COMPLETE EVENT')
+        resolve(data)
+      })
+  
+      rs.on('error', function (e) {
+        // debugimport('error', e)
+        reject(e)
+      })
     })
   })
-
-  return passThroughStream
+  
 }
 
 // import a named file into CouchDB

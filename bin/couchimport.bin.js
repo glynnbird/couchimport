@@ -129,6 +129,28 @@ if (values.help) {
   process.exit(0)
 }
 
+// swap blank strings for nulls
+if (values.transform.length === 0) {
+  values.transform = null
+}
+if (values.meta.length === 0) {
+  values.meta = null
+}
+if (values.jsonpath.length === 0) {
+  values.jsonpath = null
+}
+if (values.ignorefields.length === 0) {
+  values.ignorefields = null
+}
+
+const main = async () => {
+  const data = await couchimport.importStream(process.stdin, values)
+  console.log('Import complete')
+  console.log(data)
+}
+main()
+
+/*
 // if preview mode
 if (values.preview) {
   couchimport.previewStream(process.stdin, values, function (err, data, delimiter) {
@@ -152,6 +174,7 @@ if (values.preview) {
   })
 } else {
   // import data from a stdin
+  console.log(values)
   couchimport.importStream(process.stdin, values, function (err, data) {
     console.log('Import complete')
     if (err) {
@@ -164,3 +187,4 @@ if (values.preview) {
     console.error('ERROR', err)
   })
 }
+*/

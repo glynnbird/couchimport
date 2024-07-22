@@ -100,7 +100,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
             ok++
           } else {
             failed++
-            writer.emit('writefail', d)
+            console.error('writefail', d)
           }
         }
       }
@@ -108,7 +108,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
       latency = new Date().getTime() - start
       statusCode = e.response ? e.response.status : e.code
       failed = payload.docs.length
-      writer.emit('writeerror', e)
+      console.error(e)
       if (retry) {
         q.push(payload)
       }
@@ -124,7 +124,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
     written += ok
     totalfailed += failed
     const status = { documents: ok, failed, total: written, totalfailed, statusCodes: errorCodes, latency }
-    writer.emit('written', status)
+    console.log('written', status)
   }, parallelism, maxwps || undefined)
 
   // write the contents of the buffer to CouchDB in blocks of 500
@@ -153,7 +153,7 @@ module.exports = function (couchURL, couchDatabase, bufferSize, parallelism, ign
 
         function () {
           if (flush) {
-            writer.emit('writecomplete', { total: written, totalfailed, errors: errorCodes })
+            console.log('writecomplete', { total: written, totalfailed, errors: errorCodes })
           }
           callback()
         })
