@@ -1,59 +1,62 @@
 #!/usr/bin/env node
-process.env.DEBUG = (process.env.DEBUG) ? process.env.DEBUG + ',couchimport' : 'couchimport'
-const debug = require('debug')('couchimport')
-const couchimport = require('../app.js')
-const argv = require('../includes/args.js').parse()
-
-// output selected options
-const options = ['url', 'database', 'delimiter', 'transform', 'meta', 'buffer', 'parallelism', 'type', 'jsonpath', 'preview', 'ignorefields', 'overwrite']
-console.log('couchimport')
-console.log('-----------')
-for (const i in options) {
-  if (argv[options[i]]) {
-    const k = options[i].padEnd(11, ' ')
-    let v
-    if (options[i] === 'url') {
-      v = JSON.stringify(argv[options[i]].replace(/\/\/.+@/, '//****:****@'))
-    } else {
-      v = JSON.stringify(argv[options[i]])
-    }
-    console.log('', k, ':', v)
+const { parseArgs } = require('node:util')
+const couchimport = require('../index.js')
+const syntax =
+`Syntax:
+--url/-u           (COUCH_URL)           the URL of the CouchDB instance                     (required)
+--database/--db/-d (COUCH_DATABASE)      CouchDB Datbase name                                (required)
+--buffer/-b        (COUCH_BUFFER_SIZE)   # docs written per bulk write                       (default: 500)
+`
+const URL = process.env.COUCH_URL ? process.env.COUCH_URL : undefined
+const DATABASE = process.env.COUCH_DATABASE ? process.env.COUCH_DATABASE : undefined
+const BUFFER_SIZE = process.env.COUCH_BUFFER_SIZE ? parseInt(process.env.COUCH_BUFFER_SIZE) : '500'
+const argv = process.argv.slice(2)
+const options = {
+  url: {
+    type: 'string',
+    short: 'u',
+    default: URL
+  },
+  database: {
+    type: 'string',
+    short: 'd',
+    default: DATABASE,
+  },
+  db: {
+    type: 'string',
+    default: DATABASE
+  },
+  buffer: {
+    type: 'string',
+    short: 'b',
+    default: BUFFER_SIZE
+  },
+  help: {
+    type: 'boolean',
+    short: 'h',
+    default: false
   }
 }
-console.log('-----------')
 
-// if preview mode
-if (argv.preview) {
-  couchimport.previewStream(process.stdin, argv, function (err, data, delimiter) {
-    if (err) {
-      console.log('Error', err)
-    }
-    switch (delimiter) {
-      case ',':
-        console.log('Detected a COMMA column delimiter')
-        break
-      case '\t':
-        console.log('Detected a TAB column delimiter')
-        break
-      default:
-        console.log('Detected an unknown column delimiter')
-        break
-    }
-    if (data && data.length > 0) {
-      console.log(data[0])
-    }
-  })
-} else {
-  // import data from a stdin
-  couchimport.importStream(process.stdin, argv, function (err, data) {
-    debug('Import complete')
-    if (err) {
-      console.error('Error', err)
-    }
-    process.exit(0)
-  }).on('written', function (data) {
-    debug('Written ok:' + data.documents + ' - failed: ' + data.failed + ' -  (' + data.total + ')')
-  }).on('writeerror', function (err) {
-    debug('ERROR', err)
-  })
+// parse command-line options
+const { values } = parseArgs({ argv, options })
+if (values.db) {
+  values.database = values.db
+  delete values.db
 }
+if (values.buffer) {
+  values.buffer = parseInt(values.buffer)
+}
+
+// help mode
+if (values.help) {
+  console.log(syntax)
+  process.exit(0)
+}
+
+const main = async () => {
+  const data = await couchimport(values)
+  console.log('Import complete')
+  console.log(data)
+}
+main()
