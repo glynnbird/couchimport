@@ -57,6 +57,5 @@ if (values.help) {
 const main = async () => {
   const data = await couchimport(values)
   console.log('Import complete')
-  console.log(data)
 }
 main()

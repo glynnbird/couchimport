@@ -1,7 +1,33 @@
 const { pipeline } = require('node:stream/promises')
 const { Transform } = require('node:stream')
 const jsonpour = require('jsonpour')
-const Nano = require('nano')
+const package = require('./package.json')
+
+// simple wrapper around fetch
+const request = async (opts) => {
+  const parsedUrl = new URL(opts.baseUrl)
+  const req = {
+    method: opts.method || 'get',
+    headers: {
+      'user-agent': `${package.name}@${package.version}`,
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(opts.body)
+  }
+  if (parsedUrl.username && parsedUrl.password) {
+    req.headers.authorization = `Basic ${btoa(parsedUrl.username + ':' + parsedUrl.password)}`
+  }
+  let u = `${parsedUrl.origin}${opts.url}`
+  if (opts.qs && typeof opts.qs === 'object') {
+    u += '?' + new URLSearchParams(opts.qs)
+  }
+  const response = await fetch(u, req)
+  const retval = {
+    statusCode: response.status,
+    response: await response.json()
+  }
+  return retval
+}
 
 const couchimport = async (opts) => {
   // mandatory parameters
@@ -12,10 +38,6 @@ const couchimport = async (opts) => {
   // streams
   opts.rs = opts.rs || process.stdin
   opts.ws = opts.ws || process.stdout
-
-  // CouchDB client
-  const nano = Nano(opts.url)
-  const db = nano.db.use(opts.database)
 
   // buffer of documents waiting to be written
   const batch = []
@@ -65,18 +87,24 @@ const couchimport = async (opts) => {
     writableObjectMode: true,
     transform (obj, _, callback) {
       // push the change into our batch array
-      db.bulk({ docs: obj }, (err, response, headers) => {
-        if (!status.statusCodes[headers.statusCode]) {
-          status.statusCodes[headers.statusCode] = 0
+      const req = {
+        method: 'post',
+        baseUrl: opts.url,
+        url: `/${opts.database}/_bulk_docs`,
+        body: { docs: obj }
+      }
+      status.batch++
+      status.batchSize = obj.length
+      request(req).then((response) => {
+        if (!status.statusCodes[response.statusCode]) {
+          status.statusCodes[response.statusCode] = 0
         }
-        status.statusCodes[headers.statusCode]++
-        status.batch++
-        status.batchSize = obj.length
-        if (err) {
-          status.failCount++
-        } else {
+        status.statusCodes[response.statusCode]++
+        if (response.statusCode < 400) {
           status.successCount++
           status.totalDocCount += obj.length
+        } else {
+          status.failCount++
         }
         this.push(`written ${JSON.stringify(status)}\n`)
         callback()
@@ -98,3 +126,17 @@ const couchimport = async (opts) => {
 
 module.exports = couchimport
 
+// const m = async () => {
+//   const req = {
+//     baseUrl: process.env.COUCH_URL,
+//     url: '/cities/_all_docs',
+//     qs: {
+//       limit: 5,
+//       include_docs: true
+//     }
+//   }
+//   const response = await request(req)
+//   console.log(response)
+// }
+
+// m()

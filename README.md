@@ -20,7 +20,6 @@ npm install -g couchimport
 
 ## Configuration - environment variables
 
-
 Simply set the `COUCH_URL` environment variable e.g. for a hosted Cloudant database
 
 ```sh
@@ -65,12 +64,6 @@ _couchimport_ can be paired with [datamaker](https://www.npmjs.com/package/datam
 echo '{"_id":"{{uuid}}","name":"{{name}}","email":"{{email true}}","dob":"{{date 1950-01-01}}"}' | datamaker -f json -i 100 | couchimport --db people
 written {"docCount":100,"successCount":1,"failCount":0,"statusCodes":{"201":1}}
 Import complete
-{
-  docCount: 100,
-  successCount: 1,
-  failCount: 0,
-  statusCodes: { '201': 1 }
-}
 ```
 
 ## Environment variables
