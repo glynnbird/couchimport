@@ -18,6 +18,22 @@ npm install -g couchimport
 
 *couchimport*'s configuration parameters can be stored in environment variables or supplied as command line arguments.
 
+## Usage
+
+_couchimport_ can either read JSON docs (one per line) from _stdin_ e.g.
+
+```sh
+cat myfile.json | couchimport
+```
+
+or by passing a filename as the last parameter:
+
+```sh
+couchimport myfile.json
+```
+
+If you have other configuration saved in environment variables, then it's as simple as that!
+
 ## Configuration - environment variables
 
 Simply set the `COUCH_URL` environment variable e.g. for a hosted Cloudant database
@@ -43,7 +59,7 @@ cat mydata.jsonl | couchimport
 Supply the `--url` and `--database` parameters as command-line parameters instead:
 
 ```sh
-cat mydata.jsonl | couchimport --url "http://user:password@localhost:5984" --database "mydata"
+couchimport --url "http://user:password@localhost:5984" --database "mydata" mydata.jsonl
 ```
 
 ## Handling CSV/TSV data
@@ -63,7 +79,33 @@ _couchimport_ can be paired with [datamaker](https://www.npmjs.com/package/datam
 # template ---> datamaker ---> 100 JSON docs ---> couchimport ---> CouchDB
 echo '{"_id":"{{uuid}}","name":"{{name}}","email":"{{email true}}","dob":"{{date 1950-01-01}}"}' | datamaker -f json -i 100 | couchimport --db people
 written {"docCount":100,"successCount":1,"failCount":0,"statusCodes":{"201":1}}
+written {"batch":1,"batchSize":100,"docSuccessCount":100,"docFailCount":0,"statusCodes":{"201":1},"errors":{}}
 Import complete
+```
+
+## Understanding errors
+
+We know if we get an `HTTP 429` response, then all of the documents failed to be written to the database. But as _couchimport_ is writing data in bulk, the bulk request might get an `HTTP 201` response but it doesn't mean that all of the documents were written. Some of the document ids may have been in the database already. So the _couchimport_ output includes counts of the number of documents that were written and the number that failed, and a tally of the HTTP response codes and individual document error messages:
+
+e.g.
+
+```js
+written {"batch":10,"batchSize":1,"docSuccessCount":4,"docFailCount":6,"statusCodes":{"201":10},"errors":{"conflict":6}}
+```
+
+The above log line shows that after the tenth batch of writes, we have written 4 documents and failed to write 6 others. There were six "conflict" errors, meaning that there was a clash of document id or id/rev combination.
+
+## Parallel writes
+
+Older versions of _couchimport_ supported the ability to have multiple HTTP requests in flight at any one time, but the new simplified _couchimport_ does not. To achieve the same thing, simply split your file of JSON docs into smaller pieces and run multiple _couchimport_ jobs:
+
+```sh
+# split large file into files 1m lines each
+# this will create files xaa, xab, xac etc
+split -l 1000000 massive.txt
+# find all files starting with x and using xargs,
+# spawn 5 process running couchimport, one for each file
+find . -name "x*" | xargs -t -I % -P 5 couchimport --db test %
 ```
 
 ## Environment variables

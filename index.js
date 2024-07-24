@@ -22,11 +22,10 @@ const request = async (opts) => {
     u += '?' + new URLSearchParams(opts.qs)
   }
   const response = await fetch(u, req)
-  const retval = {
-    statusCode: response.status,
-    response: await response.json()
+  return {
+    status: response.status,
+    result: await response.json()
   }
-  return retval
 }
 
 const couchimport = async (opts) => {
@@ -47,10 +46,10 @@ const couchimport = async (opts) => {
   const status = {
     batch: 0,
     batchSize: 0,
-    totalDocCount: 0,
-    successCount: 0,
-    failCount: 0,
-    statusCodes: { }
+    docSuccessCount: 0,
+    docFailCount: 0,
+    statusCodes: { },
+    errors: {}
   }
 
   // a Node.js stream transformer that takes a stream of individual
@@ -96,15 +95,28 @@ const couchimport = async (opts) => {
       status.batch++
       status.batchSize = obj.length
       request(req).then((response) => {
-        if (!status.statusCodes[response.statusCode]) {
-          status.statusCodes[response.statusCode] = 0
+        if (!status.statusCodes[response.status]) {
+          status.statusCodes[response.status] = 0
         }
-        status.statusCodes[response.statusCode]++
-        if (response.statusCode < 400) {
-          status.successCount++
-          status.totalDocCount += obj.length
+        status.statusCodes[response.status]++
+        if (response.status < 400) {
+          // the status codes doesn't tell the whole storry, we have
+          // to inspect each of the array of responses to see if a
+          // document actually got insterted or not.
+          for(const r of response.result) {
+            if (r.ok) {
+              status.docSuccessCount++
+            } else {
+              status.docFailCount++
+              if (!status.errors[r.error]) {
+                status.errors[r.error] = 0
+              }
+              status.errors[r.error]++
+            }
+          }
         } else {
-          status.failCount++
+          // if we got an HTTP code >= 400 then all the inserts failed
+          status.docFailCount += obj.length
         }
         this.push(`written ${JSON.stringify(status)}\n`)
         callback()
