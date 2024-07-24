@@ -60,6 +60,12 @@ Supply the `--url` and `--database` parameters as command-line parameters instea
 couchimport --url "http://user:password@localhost:5984" --database "mydata" mydata.jsonl
 ```
 
+or by piping data into _stdin_:
+
+```sh
+cat mydata.jsonl | couchimport --url "http://user:password@localhost:5984" --database "mydata" 
+```
+
 ## Handling CSV/TSV data
 
 We can use another package [csvtojsonlines](https://www.npmjs.com/package/csvtojsonlines) to convert CSV/TSV files into a JSONL stream acceptable to `couchimport`:
@@ -81,9 +87,15 @@ written {"batch":1,"batchSize":100,"docSuccessCount":100,"docFailCount":0,"statu
 Import complete
 ```
 
+or with the template as a file:
+
+```sh
+cat template.json | datamaker -f json -i 10000 | couchimport --db people
+```
+
 ## Understanding errors
 
-We know if we get an `HTTP 429` response, then all of the documents failed to be written to the database. But as _couchimport_ is writing data in bulk, the bulk request might get an `HTTP 201` response but it doesn't mean that all of the documents were written. Some of the document ids may have been in the database already. So the _couchimport_ output includes counts of the number of documents that were written and the number that failed, and a tally of the HTTP response codes and individual document error messages:
+We know if we get an HTTP 4xx/5xx response, then all of the documents failed to be written to the database. But as _couchimport_ is writing data in bulk, the bulk request may get an HTTP 201 response that doesn't mean that _all_ of the documents were written. Some of the document ids may have been in the database already. So the _couchimport_ output includes counts of the number of documents that were written successfully and the number that failed, and a tally of the HTTP response codes and individual document error messages:
 
 e.g.
 
@@ -107,13 +119,13 @@ split -l 1000000 massive.txt
 find . -name "x*" | xargs -t -I % -P 2 couchimport --db test %
 ```
 
-## Environment variables
+## Environment variables reference
 
 * COUCH_URL - the url of the CouchDB instance (required, or to be supplied on the command line)
 * COUCH_DATABASE - the database to deal with (required, or to be supplied on the command line)
 * COUCH_BUFFER_SIZE - the number of records written to CouchDB per bulk write (defaults to 500, not required)
 
-## Command-line parameters
+## Command-line parameters reference
 
 You can also configure `couchimport` using command-line parameters:
 
@@ -124,14 +136,13 @@ You can also configure `couchimport` using command-line parameters:
 
 ## Using programmatically
 
-In your project, add `couchimport` into the dependencies of your package.json or run `npm install couchimport`. In your code, require
-the library with
+In your project, add `couchimport` into the dependencies of your package.json or run `npm install --save couchimport`. In your code, require the library with
 
 ```js
 const couchimport = require('couchimport')
 ```
 
-and your options are set in an object whose keys are the same as the COUCH_* environment variables:
+and your options are set in an object whose keys are the same as the command line paramters:
 
 e.g.
 
@@ -139,3 +150,5 @@ e.g.
 const opts = { url: "http://localhost:5984", database: "mydb", rs: fs.createReadStream('myfile.json') }
 await couchimport(opts)
 ```
+
+> Note: `rs` is the readstream where data will be read (default: `stdin`) and `ws` is the write stream where the output will be written (default: `stdout`)
