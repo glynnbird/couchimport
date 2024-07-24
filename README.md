@@ -16,8 +16,6 @@ Install using npm or another Node.js package manager:
 npm install -g couchimport
 ```
 
-*couchimport*'s configuration parameters can be stored in environment variables or supplied as command line arguments.
-
 ## Usage
 
 _couchimport_ can either read JSON docs (one per line) from _stdin_ e.g.
@@ -32,7 +30,7 @@ or by passing a filename as the last parameter:
 couchimport myfile.json
 ```
 
-If you have other configuration saved in environment variables, then it's as simple as that!
+*couchimport*'s configuration parameters can be stored in environment variables or supplied as command line arguments.
 
 ## Configuration - environment variables
 
@@ -104,8 +102,9 @@ Older versions of _couchimport_ supported the ability to have multiple HTTP requ
 # this will create files xaa, xab, xac etc
 split -l 1000000 massive.txt
 # find all files starting with x and using xargs,
-# spawn 5 process running couchimport, one for each file
-find . -name "x*" | xargs -t -I % -P 5 couchimport --db test %
+# spawn a max of 2 process at once running couchimport, 
+# one for each file
+find . -name "x*" | xargs -t -I % -P 2 couchimport --db test %
 ```
 
 ## Environment variables
