@@ -8,6 +8,8 @@ When populating CouchDB databases, often the source of the data is initially som
 
 > Note: `couchimport` used to handle the CSV to JSON conversion, but this part is now handled by [csvtojsonlines](https://www.npmjs.com/package/csvtojsonlines), keeping this package smaller and easier to maintain. The `couchimport@1.6.5` package is the last version to support CSV/TSV natively - from 2.0 onwards, `couchimport` is only for pouring JSONL files into CouchDB.
 
+> Also note: the companion CSV export utility (couchexport) is now hosted at [couchcsvexport](https://www.npmjs.com/package/couchcsvexport).
+
 ## Installation
 
 Install using npm or another Node.js package manager:

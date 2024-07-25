@@ -138,17 +138,3 @@ const couchimport = async (opts) => {
 
 module.exports = couchimport
 
-// const m = async () => {
-//   const req = {
-//     baseUrl: process.env.COUCH_URL,
-//     url: '/cities/_all_docs',
-//     qs: {
-//       limit: 5,
-//       include_docs: true
-//     }
-//   }
-//   const response = await request(req)
-//   console.log(response)
-// }
-
-// m()
