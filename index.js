@@ -2,31 +2,7 @@ const { pipeline } = require('node:stream/promises')
 const { Transform } = require('node:stream')
 const jsonpour = require('jsonpour')
 const package = require('./package.json')
-
-// simple wrapper around fetch
-const request = async (opts) => {
-  const parsedUrl = new URL(opts.baseUrl)
-  const req = {
-    method: opts.method || 'get',
-    headers: {
-      'user-agent': `${package.name}@${package.version}`,
-      'content-type': 'application/json'
-    },
-    body: JSON.stringify(opts.body)
-  }
-  if (parsedUrl.username && parsedUrl.password) {
-    req.headers.authorization = `Basic ${btoa(parsedUrl.username + ':' + parsedUrl.password)}`
-  }
-  let u = `${parsedUrl.origin}${opts.url}`
-  if (opts.qs && typeof opts.qs === 'object') {
-    u += '?' + new URLSearchParams(opts.qs)
-  }
-  const response = await fetch(u, req)
-  return {
-    status: response.status,
-    result: await response.json()
-  }
-}
+const ccurllib = require('ccurllib')
 
 const couchimport = async (opts) => {
   // mandatory parameters
@@ -88,13 +64,16 @@ const couchimport = async (opts) => {
       // push the change into our batch array
       const req = {
         method: 'post',
-        baseUrl: opts.url,
-        url: `/${opts.database}/_bulk_docs`,
-        body: { docs: obj }
+        url: `${opts.url}/${opts.database}/_bulk_docs`,
+        body: JSON.stringify({ docs: obj }),
+        headers: {
+          'user-agent': `${package.name}/${package.version}`,
+          'content-type': 'application/json'
+        }
       }
       status.batch++
       status.batchSize = obj.length
-      request(req).then((response) => {
+      ccurllib.request(req).then((response) => {
         if (!status.statusCodes[response.status]) {
           status.statusCodes[response.status] = 0
         }

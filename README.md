@@ -126,6 +126,7 @@ find . -name "x*" | xargs -t -I % -P 2 couchimport --db test %
 * COUCH_URL - the url of the CouchDB instance (required, or to be supplied on the command line)
 * COUCH_DATABASE - the database to deal with (required, or to be supplied on the command line)
 * COUCH_BUFFER_SIZE - the number of records written to CouchDB per bulk write (defaults to 500, not required)
+* IAM_API_KEY - to use IBM IAM to do authentication, set the IAM_API_KEY to your api key and a bearer token will be used in the HTTP requests.
 
 ## Command-line parameters reference
 
