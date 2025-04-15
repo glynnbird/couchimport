@@ -4,7 +4,7 @@
 
 When populating CouchDB databases, often the source of the data is initially some JSON documents in a file, or some structured CSV/TSV data from another database's export.
 
-*couchimport* is designed to assist with importing such data into CouchDb efficiently. Simply pipe a file full of JSON documents into *couchimport*, telling the URL and database to send the data to.
+*couchimport* is designed to assist with importing such data into CouchDB efficiently. Simply pipe a file full of JSON documents into *couchimport*, telling it the URL and database to send the data to and *couchimport* will batch the documents into batches and employ CouchDB's bulk import API.
 
 > Note: `couchimport` used to handle the CSV to JSON conversion, but this part is now handled by [csvtojsonlines](https://www.npmjs.com/package/csvtojsonlines), keeping this package smaller and easier to maintain. The `couchimport@1.6.5` package is the last version to support CSV/TSV natively - from 2.0 onwards, `couchimport` is only for pouring JSONL files into CouchDB.
 
@@ -36,7 +36,7 @@ couchimport myfile.json
 
 ## Configuration - environment variables
 
-Simply set the `COUCH_URL` environment variable e.g. for a hosted Cloudant database
+Simply set the `COUCH_URL` environment variable e.g. for a hosted Cloudant/CouchDB database
 
 ```sh
 export COUCH_URL="https://myusername:myPassw0rd@myhost.cloudant.com"
@@ -66,6 +66,14 @@ or by piping data into _stdin_:
 
 ```sh
 cat mydata.jsonl | couchimport --url "http://user:password@localhost:5984" --database "mydata" 
+```
+
+A common usage pattern is to store the URL as an environment variable and to supply the database name as a command-line parameter e.g.
+
+```sh
+export COUCH_URL="http://user:password@localhost:5984"
+cat myfile1.json | couchimport --db db1
+cat myfile2.json | couchimport --db db2
 ```
 
 ## Handling CSV/TSV data
@@ -123,10 +131,10 @@ find . -name "x*" | xargs -t -I % -P 2 couchimport --db test %
 
 ## Environment variables reference
 
-* COUCH_URL - the url of the CouchDB instance (required, or to be supplied on the command line)
-* COUCH_DATABASE - the database to deal with (required, or to be supplied on the command line)
-* COUCH_BUFFER_SIZE - the number of records written to CouchDB per bulk write (defaults to 500, not required)
-* IAM_API_KEY - to use IBM IAM to do authentication, set the IAM_API_KEY to your api key and a bearer token will be used in the HTTP requests.
+* `COUCH_URL` - the url of the CouchDB instance (required, or to be supplied on the command line)
+* `COUCH_DATABASE` - the database to deal with (required, or to be supplied on the command line)
+* `COUCH_BUFFER_SIZE` - the number of records written to CouchDB per bulk write (defaults to 500, not required)
+* `IAM_API_KEY` - to use IBM IAM to do authentication, set the IAM_API_KEY to your api key and a bearer token will be used in the HTTP requests.
 
 ## Command-line parameters reference
 
@@ -145,7 +153,7 @@ In your project, add `couchimport` into the dependencies of your package.json or
 const couchimport = require('couchimport')
 ```
 
-and your options are set in an object whose keys are the same as the command line paramters:
+and your options are set in an object whose keys are the same as the command line parameters:
 
 e.g.
 

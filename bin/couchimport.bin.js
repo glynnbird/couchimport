@@ -67,17 +67,19 @@ if (values.help) {
   process.exit(0)
 }
 
+// the input file name can be provided, but only 1 is allowed
 if (positionals.length > 1) {
   console.log('Too many filenames provided - maximum is one')
   console.log(syntax)
   process.exit(1)
 }
 
-
+// entry point
 const main = async () => {
   if (positionals.length === 1) {
     // we have a filename supplied
     try {
+      // open the file and get a ReadStream
       console.log(`Opening file ${positionals[0]}`)
       const fd = await open(positionals[0])
       values.rs = fd.createReadStream({ encoding: 'utf8' })
@@ -86,6 +88,7 @@ const main = async () => {
       process.exit(2)
     }
   } else {
+    // if not filename provided, expect data to pour into stdin
     console.log('Reading data from stdin')
   }
   const data = await couchimport(values)

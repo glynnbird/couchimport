@@ -16,7 +16,9 @@ const couchimport = async (opts) => {
 
   // buffer of documents waiting to be written
   const batch = []
-  opts.batch = opts.batch > 1 ? opts.batch : 500
+
+  // the batch size, defaults to 500
+  opts.buffer = opts.buffer > 1 ? opts.buffer : 500
 
   // status - the progress of the insert
   const status = {
@@ -29,7 +31,7 @@ const couchimport = async (opts) => {
   }
 
   // a Node.js stream transformer that takes a stream of individual
-  // changes and groups them into batches of opts.buffer except the
+  // documents and groups them into batches of opts.buffer except the
   // last batch which may be smaller.
   const batcher = new Transform({
     readableObjectMode: true,
@@ -45,7 +47,7 @@ const couchimport = async (opts) => {
       callback()
     },
     flush (callback) {
-      // handle the any remaining buffered data
+      // handle any remaining buffered data
       if (batch.length > 0) {
         // send anything left as a final batch
         this.push(batch)
@@ -54,14 +56,14 @@ const couchimport = async (opts) => {
     }
   })
 
-  // a Node.js stream transformer that takes a stream of individual
-  // changes and groups them into batches of opts.buffer except the
-  // last batch which may be smaller.
+  // a Node.js stream transformer that receives batches (arrays) of
+  // objects which are written to CouchDB's bulk_docs endpoint
   const writer = new Transform({
     readableObjectMode: true,
     writableObjectMode: true,
     transform (obj, _, callback) {
-      // push the change into our batch array
+      // generate a bulk_docs request containing the supplied batch
+      // of documents to write
       const req = {
         method: 'post',
         url: `${opts.url}/${opts.database}/_bulk_docs`,
@@ -71,8 +73,12 @@ const couchimport = async (opts) => {
           'content-type': 'application/json'
         }
       }
+      
+      // increment running totals
       status.batch++
       status.batchSize = obj.length
+
+      // make the request
       ccurllib.request(req).then((response) => {
         if (!status.statusCodes[response.status]) {
           status.statusCodes[response.status] = 0
@@ -97,19 +103,22 @@ const couchimport = async (opts) => {
           // if we got an HTTP code >= 400 then all the inserts failed
           status.docFailCount += obj.length
         }
+
+        // write some output to show ongoing progress
         this.push(`written ${JSON.stringify(status)}\n`)
         callback()
       })
     }
   })
 
-  // stream every object from the results array via a filter to stdout
+  // stream every object from the input stream, through the transformers
+  // to the output stream
   await pipeline(
-    opts.rs,
-    jsonpour.parse(),
-    batcher,
-    writer,
-    opts.ws,
+    opts.rs,            // stdin, by default
+    jsonpour.parse(),   // streaming JSON parser, emits once per object
+    batcher,            // batches individual objects into arrays
+    writer,             // writes arrays to CouchDB bulk_docs
+    opts.ws,            // output status to stdout, by default
     { end: false }
   )
   return status
