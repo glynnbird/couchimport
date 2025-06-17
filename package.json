@@ -1,6 +1,6 @@
 {
   "name": "couchimport",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "CouchDB import scripts",
   "type": "module",
   "main": "index.js",
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/glynnbird/couchimport#readme",
   "dependencies": {
-    "ccurllib": "^4.0.0",
+    "ccurllib": "^4.0.1",
     "jsonpour": "^2.0.0"
   },
   "bin": {
