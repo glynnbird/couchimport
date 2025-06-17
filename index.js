@@ -1,10 +1,13 @@
-const { pipeline } = require('node:stream/promises')
-const { Transform } = require('node:stream')
-const jsonpour = require('jsonpour')
-const package = require('./package.json')
-const ccurllib = require('ccurllib')
+import { pipeline } from 'node:stream/promises'
+import  { Transform } from 'node:stream'
+import { readFileSync } from 'node:fs'
+import * as jsonpour from 'jsonpour'
+import * as ccurllib from 'ccurllib'
 
-const couchimport = async (opts) => {
+// load the package meta data
+const pkg = JSON.parse(readFileSync('./package.json', { encoding: 'utf8' }))
+
+export async function couchimport(opts) {
   // mandatory parameters
   if (!opts.url || !opts.database) {
     throw new Error('must supply url and database')
@@ -69,7 +72,7 @@ const couchimport = async (opts) => {
         url: `${opts.url}/${opts.database}/_bulk_docs`,
         body: JSON.stringify({ docs: obj }),
         headers: {
-          'user-agent': `${package.name}/${package.version}`,
+          'user-agent': `${pkg.name}/${pkg.version}`,
           'content-type': 'application/json'
         }
       }
@@ -124,5 +127,4 @@ const couchimport = async (opts) => {
   return status
 }
 
-module.exports = couchimport
 

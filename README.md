@@ -150,7 +150,7 @@ You can also configure `couchimport` using command-line parameters:
 In your project, add `couchimport` into the dependencies of your package.json or run `npm install --save couchimport`. In your code, require the library with
 
 ```js
-const couchimport = require('couchimport')
+import { couchimport } from 'couchimport'
 ```
 
 and your options are set in an object whose keys are the same as the command line parameters:

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-const { open } = require('node:fs/promises')
-const { parseArgs } = require('node:util')
-const couchimport = require('../index.js')
+import { open } from 'node:fs/promises'
+import { parseArgs } from 'node:util'
+import { couchimport } from '../index.js'
+
 const syntax =
 `
 couchimport <filename>
